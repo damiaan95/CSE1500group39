@@ -1,1 +1,1 @@
-# CSE1500group39
+# CSE1500: CSE1 group39
