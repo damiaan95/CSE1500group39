@@ -29,5 +29,5 @@ wss.on("connection", function(ws) {
 app.use(express.static(__dirname + "/public"));
 server.listen(port);
 app.get('/', function(req, res){
-    res.sendFile("splash.html", {root: "./public"});
+    res.sendFile("index.html", {root: "./public"});
 });
