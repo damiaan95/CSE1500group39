@@ -7,6 +7,8 @@ var websocket = require("ws");
 // var gameStatistics = require("./statTracker");
 var Game = require("./gamestate");
 
+var websocket = require("ws");
+
 var port = process.argv[2];
 var app = express();
 
@@ -118,3 +120,4 @@ wss.on("connection", function connection(ws) {
 
 
 server.listen(port);
+
