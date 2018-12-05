@@ -1,0 +1,23 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+main section{
+    float:left;
+    width:400px;
+    overflow:hidden;
+}
+
+#tutorial{
+    float:left;
+    /*display:block;*/
+}
+
+#tutorial img{
+    display:block;
+}
+
+div{
+    padding:20px;
+}
