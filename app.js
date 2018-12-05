@@ -1,33 +1,123 @@
 var express = require("express");
 var http = require("http");
+var websocket = require("ws");
+
+// var message = require("./messages");
+//
+// var gameStatistics = require("./statTracker");
+var Game = require("./gamestate");
 
 var websocket = require("ws");
 
 var port = process.argv[2];
 var app = express();
 
+//app.set("view engine", "ejs");
+app.use(express.static(__dirname + "/public"));
+
+app.get('/splash/', function (req, res) {
+    res.sendFile("index.html", {root: "./public/splash"});
+    //res.render("splash.ejs", {gamesInitialized: gameStatus.gamesInitialized, gamesCompleted: gameStatus.gamesCompleted});
+});
+
+
+app.get('/game/', function (req, res) {
+    res.sendFile("index.html", {root: "./public/game"});
+});
+
 var server = http.createServer(app);
+const wss = new websocket.Server({server});
 
-const wss = new websocket.Server({ server });
+var websockets = {}; //property:websocket, value:game
 
-wss.on("connection", function(ws) {
+/*
+ *Clean up of websockets object
+ */
+setInterval(function () {
+    for (let i in websockets) {
+        let gameObj = websockets[i];
+        if (gameObj.finalGamestate()) {
+            console.log("Deleting element " + i);
+            delete websockets[i];
+        }
+    }
+}, 50000);
 
+var pendingGame = new Game(gameStatus.gamesInitialized++);
+var connectionID = 0;
 
-    //let's slow down the server response time a bit to make the change visible on the client side
-    setTimeout(function() {
-        console.log("Connection state: "+ ws.readyState);
-        ws.send("Thanks for the message. --Your server.");
-        ws.close();
-        console.log("Connection state: "+ ws.readyState);
-    }, 2000);
+wss.on("connection", function connection(ws) {
+    let newPlayer = ws;
+    newPlayer.id = connectionID++;
+    let playerType = pendingGame.addPlayer(newPlayer);
+    websockets[newPlayer.id] = pendingGame;
 
-    ws.on("message", function incoming(message) {
-        console.log("[LOG] " + message);
+    console.log("Player %s placed in game %s as %s", newPlayer.id, pendingGame.id, playerType);
+
+    /*
+     * Inform the client about its assigned player type
+     */
+    newPlayer.send((playerType === "W") ? messages.S_PLAYER_W : messages.S_PLAYER_B);
+
+    if (pendingGame.hasTwoConnectedPlayers()) {
+        pendingGame = new Game(gameStatus.gamesInitialized++);
+    }
+
+    newPlayer.on("message", function incoming(message) {
+        let mess = JSON.parse(message);
+
+        let gameObj = websockets[newPlayer.id];
+        let isPlayerW = (gameObj.white === newPlayer);
+
+        if (gameObj.hasTwoConnectedPlayers()) {
+            if (mess.type === messages.T_MAKE_A_MOVE) {
+                if (isPlayerW) {
+                    gameObj.black.send(message);
+                    gameObj.setState("B TURN");
+                } else {
+                    gameObj.white.send(message);
+                    gameObj.setState("W TURN");
+                }
+                if (mess.type === messages.T_GAME_WON) {
+                    if (isPlayerW) {
+                        gameObj.black.send(messages.YOU_LOST);
+                        gameObj.setState("W WON");
+                    } else {
+                        gameObj.white.send(messages.YOU_LOST);
+                        gameObj.setState("B WON");
+                    }
+                }
+            }
+        }
+    });
+
+    newPlayer.on("close", function (code) {
+        console.log(newPlayer.id + " disconnected...");
+
+        if (code == "1001") {
+            let gameObj = websockets[newPlayer.id];
+
+            if (gameObj.isValidTransition(gameObj.gameState, "ABORTED")) {
+                gameObj.setState("ABORTED");
+            }
+
+            try {
+                gameObj.white.close();
+                gameObj.white = null;
+            } catch (e) {
+                console.log("White player closing: " + e);
+            }
+
+            try {
+                gameObj.black.close();
+                gameObj.black = null;
+            } catch(e) {
+                console.log("Black player closing: " + e);
+            }
+        }
     });
 });
 
-app.use(express.static(__dirname + "/public"));
+
 server.listen(port);
-app.get('/', function(req, res){
-    res.sendFile("index.html", {root: "./public"});
-});
+

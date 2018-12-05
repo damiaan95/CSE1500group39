@@ -9,7 +9,6 @@
         <main>
             <section id="left">
                 <h1>How to play:</h1>
-                <p id ="hello"></p>
                 <div id="tutorial">
                     <img src="../images/Logo%20chess%20game.png" title="Image to be implemented of dragging piece">
                     <img src="../images/Logo%20chess%20game.png" title="Image to be implemented of circles on the chess board">
@@ -34,16 +33,6 @@
                     Rice Points: <span id="stat3"></span>
                 </div>
             </section>
-            <script>
-                var socket = new WebSocket("ws://localhost:3000");
-                socket.onmessage = function(event){
-                    document.getElementById("hello").innerHTML = event.data;
-                }
-                socket.onopen = function(){
-                    socket.send("Hello from the client!");
-                    document.getElementById("hello").innerHTML = "Sending a first message to the server ...";
-                };
-            </script>
         </main>
     </body>
 </html>
