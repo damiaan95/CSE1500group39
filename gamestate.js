@@ -90,6 +90,17 @@ game.prototype.addPlayer = function(player) {
     }
 };
 
+game.prototype.finalGamestate = function(){
+    switch(this.gameState){
+        case "W WON":
+        case "B WON":
+        case "ABORTED":
+            return true;
+        default:
+            return false;
+    }
+};
+
 module.exports = game;
 
 

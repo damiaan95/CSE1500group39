@@ -34,7 +34,7 @@ var websockets = {}; //property:websocket, value:game
 setInterval(function () {
     for (let i in websockets) {
         let gameObj = websockets[i];
-        if (gameObj.finalStatus != null) {
+        if (gameObj.finalGamestate()) {
             console.log("Deleting element " + i);
             delete websockets[i];
         }
@@ -51,69 +51,70 @@ wss.on("connection", function connection(ws) {
     websockets[newPlayer.id] = pendingGame;
 
     console.log("Player %s placed in game %s as %s", newPlayer.id, pendingGame.id, playerType);
-});
 
-/*
- * Inform the client about its assigned player type
- */
-newPlayer.send((playerType == "W") ? messages.S_PLAYER_W : messages.S_PLAYER_B);
+    /*
+     * Inform the client about its assigned player type
+     */
+    newPlayer.send((playerType === "W") ? messages.S_PLAYER_W : messages.S_PLAYER_B);
 
-if (pendingGame.hasTwoConnectedPlayers()) {
-    pendingGame = new Game(gameStatus.gamesInitialized++);
-}
+    if (pendingGame.hasTwoConnectedPlayers()) {
+        pendingGame = new Game(gameStatus.gamesInitialized++);
+    }
 
-newPlayer.on("message", function incoming(message) {
-    let mess = JSON.parse(message);
+    newPlayer.on("message", function incoming(message) {
+        let mess = JSON.parse(message);
 
-    let gameObj = websockets[newPlayer.id];
-    let isPlayerW = (gameObj.white == newPlayer) ? true : false;
+        let gameObj = websockets[newPlayer.id];
+        let isPlayerW = (gameObj.white === newPlayer);
 
-    if (gameObj.hasTwoConnectedPlayers()) {
-        if (mess.type == messages.T_MAKE_A_MOVE) {
-            if (isPlayerW) {
-                gameObj.black.send(message);
-                gameObj.setStatus("B TURN");
-            } else {
-                gameObj.white.send(message);
-                gameObj.setStatus("W TURN");
-            }
-            if (mess.type == message.T_GAME_WON) {
+        if (gameObj.hasTwoConnectedPlayers()) {
+            if (mess.type === messages.T_MAKE_A_MOVE) {
                 if (isPlayerW) {
-                    gameObj.black.send(message.YOU_LOST);
-                    gameObj.setStatus("W WON");
+                    gameObj.black.send(message);
+                    gameObj.setState("B TURN");
                 } else {
-                    gameObj.white.send(message.YOU_LOST);
-                    gameObj.setStatus("B WON");
+                    gameObj.white.send(message);
+                    gameObj.setState("W TURN");
+                }
+                if (mess.type === messages.T_GAME_WON) {
+                    if (isPlayerW) {
+                        gameObj.black.send(messages.YOU_LOST);
+                        gameObj.setState("W WON");
+                    } else {
+                        gameObj.white.send(messages.YOU_LOST);
+                        gameObj.setState("B WON");
+                    }
                 }
             }
         }
-    }
+    });
+
+    newPlayer.on("close", function (code) {
+        console.log(newPlayer.id + " disconnected...");
+
+        if (code == "1001") {
+            let gameObj = websockets[newPlayer.id];
+
+            if (gameObj.isValidTransition(gameObj.gameState, "ABORTED")) {
+                gameObj.setState("ABORTED");
+            }
+
+            try {
+                gameObj.white.close();
+                gameObj.white = null;
+            } catch (e) {
+                console.log("White player closing: " + e);
+            }
+
+            try {
+                gameObj.black.close();
+                gameObj.black = null;
+            } catch(e) {
+                console.log("Black player closing: " + e);
+            }
+        }
+    });
 });
 
-newPlayer.on("close", function(code){
-    console.log(newPlayer.id + " disconnected...");
-
-    if(code == "1001"){
-        let gameObj = websockets[newPlayer.id];
-
-        if(gameObj.isValidTransition(gameObj.gameState, "ABORTED")){
-            gameObj.setStatus("ABORTED");
-        }
-
-        try{
-            gameObj.white.close();
-            gameObj.white = null;
-        }catch(e){
-            console.log("White player closing: " + e);
-        }
-
-        try{
-            gameObj.black.close();
-            gameObj.black = null;
-        }catch{
-            console.log("Black player closing: " + e);
-        }
-    }
-});
 
 server.listen(port);
