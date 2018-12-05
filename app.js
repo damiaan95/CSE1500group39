@@ -6,4 +6,6 @@ var app = express();
 
 app.use(express.static(__dirname + "/public"));
 http.createServer(app).listen(port);
-console.log("Now listening on " + port);
+app.get('/', function(req, res){
+    res.sendFile("splash.html", {root: "./public"});
+});
