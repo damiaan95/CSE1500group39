@@ -62,20 +62,20 @@ King.prototype.constructor = King;
 
 function Board(player){
     this.createBoard = function(){
-        var opposite;
+        let opposite;
         if(player === "W"){
             opposite = "B";
         }else{
             opposite = "W";
         }
         return [
-            [new Tower(opposite), new Knight(opposite), new Rook(opposite), new Queen(opposite), new King(opposite), new Rook(opposite), new Knight(opposite), new Tower(opposite)]
-                [new Pawn(opposite), new Pawn(opposite), new Pawn(opposite), new Pawn(opposite), new Pawn(opposite), new Pawn(opposite), new Pawn(opposite), new Pawn(opposite)]
-                [null, null, null, null, null, null, null, null]
-                [null, null, null, null, null, null, null, null]
-                [null, null, null, null, null, null, null, null]
-                [null, null, null, null, null, null, null, null]
-                [new Pawn(player), new Pawn(player), new Pawn(player), new Pawn(player), new Pawn(player), new Pawn(player), new Pawn(player), new Pawn(player)]
+            [new Tower(opposite), new Knight(opposite), new Rook(opposite), new Queen(opposite), new King(opposite), new Rook(opposite), new Knight(opposite), new Tower(opposite)],
+                [new Pawn(opposite), new Pawn(opposite), new Pawn(opposite), new Pawn(opposite), new Pawn(opposite), new Pawn(opposite), new Pawn(opposite), new Pawn(opposite)],
+                [null, null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null, null],
+                [new Pawn(player), new Pawn(player), new Pawn(player), new Pawn(player), new Pawn(player), new Pawn(player), new Pawn(player), new Pawn(player)],
                 [new Tower(player), new Knight(player), new Rook(player), new Queen(player), new King(player), new Rook(player), new Knight(player), new Tower(player)]
         ];
     }
