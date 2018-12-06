@@ -1,14 +1,17 @@
 (function() {
     
     Move.checkValidity = function(from, to, gs) {
-        if(from === to || gs.isChecked()) {
+        if(from === to) {
             return false;
         }
+        let piece = gs.board.getPiece(from);
+        //to do
         return true;
     };
 
     Move.getAllPossibleMoves = function(from, gs) {
         let moves = [];
+        let piece = gs.board.getPiece(from);
         //to do
         return moves;
     };
@@ -17,6 +20,7 @@
         if(checkValidity(from, to, gs)) {
            //to do
         } else {
+            console.log("Invalid move!")
             return;
         }
     };

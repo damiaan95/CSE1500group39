@@ -68,8 +68,8 @@ function GameState(board, socket) {
         this.board = newBoard;
 
         if(this.checkmate()) {
-            let winningMessage = Messages.T_GAME_WON;
-            socket.send(JSON.stringify(winningMessage));
+            let winningMessage = Messages.S_GAME_WON;
+            socket.send(winningMessage);
             socket.close();
         }
 
