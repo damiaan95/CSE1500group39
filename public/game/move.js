@@ -1,14 +1,26 @@
-function checkValidity(from, to) {
-    if(from !== to) {
+(function() {
+    
+    Move.checkValidity = function(from, to, gs) {
+        if(from === to || gs.isChecked()) {
+            return false;
+        }
         return true;
-    }
-    return false;
-}
+    };
 
-export function executeMove(from, to) {
-    if(checkValidity(from, to)) {
+    Move.getAllPossibleMoves = function(from, gs) {
+        let moves = [];
         //to do
-    } else {
-        return;
-    }
-}
+        return moves;
+    };
+    
+    Move.executeMove = function(from, to, gs) {
+        if(checkValidity(from, to, gs)) {
+           //to do
+        } else {
+            return;
+        }
+    };
+    
+})(this.Move = {});
+
+

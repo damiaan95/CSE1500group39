@@ -1,3 +1,87 @@
+function GameState(board, socket) {
+
+    this.playerType = null;
+    this.board = board;
+    this.turn = false;
+    this.checked = false;
+    this.enemyChecked = false;
+
+    this.getPlayerType = function() {
+        return this.playerType;
+    };
+
+    this.setPlayerType = function(type) {
+        this.playerType = type;
+    };
+
+    this.getTurn = function() {
+        return turn;
+    };
+
+    this.setTurn = function() {
+        this.turn = true;
+    };
+
+    this.isChecked = function() {
+        return checked;
+    }
+    this.enemyIsChecked = function() {
+        return enemyChecked;
+    };
+
+    this.gotChecked = function(type) {
+
+        let king = board.getKing(type);
+        let kingPos = king.getPos();
+        
+        if(type === "white") {
+            let blackPieces = board.getPieces("black");
+            blackPieces.forEach(piece => {
+                let pos = piece.getPosition();
+                if(Move.checkValidity(pos, kingPos, this)) {
+                    return true;
+                }
+            });
+        } else {
+            let blackPieces = board.getPieces("white");
+            blackPieces.forEach(piece => {
+                let pos = piece.getPosition();
+                if(Move.checkValidity(pos, kingPos, this)) {
+                    return true;
+                }
+            });
+        }
+        return false;
+    }
+
+    this.checkmate = function() {
+        let kingMoves;
+        if(this.playerType === "white") {
+            kingMoves = Move.getAllPossibleMoves(this.board.getKing("black").getPosition, this);
+        }  else {
+            kingMoves = Move.getAllPossibleMoves(this.board.getKing("white").getPosition, this);
+        }
+        return (kingMoves.length === 0 && enemyChecked);
+    }
+
+    this.updateGameState = function(newBoard) {
+        this.board = newBoard;
+
+        if(this.checkmate()) {
+            let winningMessage = Messages.T_GAME_WON;
+            socket.send(JSON.stringify(winningMessage));
+            socket.close();
+        }
+
+        if(!this.turn) {
+            this.turn = true;
+            this.checked = this.gotChecked(playerType);
+        } else {
+            this.turn = false;
+        }
+    };
+};
+
 var main = function () {
 
     "use strict";
