@@ -2,7 +2,7 @@ var express = require("express");
 var http = require("http");
 var websocket = require("ws");
 
-// var message = require("./messages");
+ var messages = require("./public/game/messages");
 //
 // var gameStatistics = require("./statTracker");
 var Game = require("./gamestate");
@@ -80,10 +80,10 @@ wss.on("connection", function connection(ws) {
                 }
                 if (mess.type === messages.T_GAME_WON) {
                     if (isPlayerW) {
-                        gameObj.black.send(messages.YOU_LOST);
+                        gameObj.black.send(messages.S_YOU_LOST);
                         gameObj.setState("W WON");
                     } else {
-                        gameObj.white.send(messages.YOU_LOST);
+                        gameObj.white.send(messages.S_YOU_LOST);
                         gameObj.setState("B WON");
                     }
                 }
