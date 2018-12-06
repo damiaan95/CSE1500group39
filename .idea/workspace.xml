@@ -32,6 +32,15 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/game/game.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="272">
+              <caret line="22" column="36" lean-forward="true" selection-start-line="22" selection-start-column="36" selection-end-line="22" selection-end-column="36" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gamestate.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="68">
@@ -43,8 +52,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/board.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="576">
-              <caret line="84" column="22" selection-start-line="84" selection-start-column="22" selection-end-line="84" selection-end-column="22" />
+            <state relative-caret-position="474">
+              <caret line="79" column="10" lean-forward="true" selection-start-line="79" selection-start-column="10" selection-end-line="79" selection-end-column="10" />
             </state>
           </provider>
         </entry>
@@ -196,13 +205,13 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="39394000" />
+    <option name="totallyTimeSpent" value="40748000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1354924" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1354924" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -296,13 +305,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/game/game.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="22" column="36" lean-forward="true" selection-start-line="22" selection-start-column="36" selection-end-line="22" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/javascript/nodejs/10.14.0/core-modules/internal/modules/cjs/loader.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="149">
@@ -339,6 +341,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/public/game/game.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="22" column="36" lean-forward="true" selection-start-line="22" selection-start-column="36" selection-end-line="22" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/gamestate.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
@@ -348,8 +357,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/board.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="576">
-          <caret line="84" column="22" selection-start-line="84" selection-start-column="22" selection-end-line="84" selection-end-column="22" />
+        <state relative-caret-position="474">
+          <caret line="79" column="10" lean-forward="true" selection-start-line="79" selection-start-column="10" selection-end-line="79" selection-end-column="10" />
         </state>
       </provider>
     </entry>
