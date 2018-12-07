@@ -7,8 +7,6 @@ var websocket = require("ws");
 // var gameStatistics = require("./statTracker");
 var Game = require("./gamestate");
 
-var websocket = require("ws");
-
 var port = process.argv[2];
 var app = express();
 
@@ -43,7 +41,7 @@ setInterval(function () {
     }
 }, 50000);
 
-var pendingGame = new Game(gameStatus.gamesInitialized++);
+var pendingGame = new Game(0);//gameStatus.gamesInitialized++
 var connectionID = 0;
 
 wss.on("connection", function connection(ws) {
@@ -60,7 +58,7 @@ wss.on("connection", function connection(ws) {
     newPlayer.send((playerType === "W") ? messages.S_PLAYER_W : messages.S_PLAYER_B);
 
     if (pendingGame.hasTwoConnectedPlayers()) {
-        pendingGame = new Game(gameStatus.gamesInitialized++);
+        pendingGame = new Game(connectionID);//gameStatus.gamesInitialized++
     }
 
     newPlayer.on("message", function incoming(message) {
