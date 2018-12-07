@@ -10,8 +10,8 @@ Piece.prototype.getPosition = function () {
     return this.position;
 };
 
-function MovesPiece(color) {
-    Piece.call(this, color);
+function MovesPiece(color, row, column) {
+    Piece.call(this, color, row, column);
     this.moved = false;
 }
 
@@ -26,43 +26,43 @@ MovesPiece.prototype.isMoved = function () {
     this.moved = true;
 };
 
-function Pawn(color) {
-    MovesPiece.call(this, color);
+function Pawn(color, column, row) {
+    MovesPiece.call(this, color, column, row);
 }
 
 Pawn.prototype = Object.create(MovesPiece.prototype);
 Pawn.prototype.constructor = Pawn;
 
-function Rook(color) {
-    Piece.call(this, color);
+function Rook(color, column, row) {
+    Piece.call(this, color, column, row);
 }
 
 Rook.prototype = Object.create(Piece.prototype);
 Rook.prototype.constructor = Rook;
 
-function Knight(color) {
-    Piece.call(this, color);
+function Knight(color, column, row) {
+    Piece.call(this, color, column, row);
 }
 
 Knight.prototype = Object.create(Piece.prototype);
 Knight.prototype.constructor = Knight;
 
-function Bishop(color) {
-    Piece.call(this, color);
+function Bishop(color, column, row) {
+    Piece.call(this, color, column, row);
 }
 
 Knight.prototype = Object.create(Piece.prototype);
 Knight.prototype.constructor = Knight;
 
-function Queen(color) {
-    Piece.call(this, color);
+function Queen(color, column, row) {
+    Piece.call(this, color, column, row);
 }
 
 Queen.prototype = Object.create(Piece.prototype);
 Queen.prototype.constructor = Queen;
 
-function King(color) {
-    MovesPiece.call(this, color);
+function King(color, column, row) {
+    MovesPiece.call(this, color, column, row);
 }
 
 King.prototype = Object.create(MovesPiece.prototype);
@@ -86,7 +86,13 @@ function rowLetter(row) {
             return "g";
         case 7:
             return "h";
+        default:
+            return "!";
     }
+}
+
+function translateCoordinates(row, column) {
+    return (rowLetter(row) + (column + 1).toString()).toString();
 }
 
 function Board(color) {
@@ -98,19 +104,19 @@ function Board(color) {
         this.opponentColor = "W";
     }
 
-    this.playerKing = new King(this.playerColor, 7, 4);
-    this.opponentKing = new King(this.opponentColor, 0, 4);
+    this.playerKing = new King(this.playerColor, 4, 0);
+    this.opponentKing = new King(this.opponentColor, 4, 7);
 
     this.board =
         [
-            [new Rook(this.opponentColor, 7, 0), new Knight(this.opponentColor, 7, 1), new Bishop(this.opponentColor, 7, 2), new Queen(this.opponentColor, 7, 3), this.opponentKing, new Bishop(this.opponentColor, 7, 5), new Knight(this.opponentColor, 7, 6), new Rook(this.opponentColor, 7, 7)],
-            [new Pawn(this.opponentColor, 6, 0), new Pawn(this.opponentColor, 6, 1), new Pawn(this.opponentColor, 6, 2), new Pawn(this.opponentColor, 6, 3), new Pawn(this.opponentColor, 6, 4), new Pawn(this.opponentColor, 6, 5), new Pawn(this.opponentColor, 6, 6), new Pawn(this.opponentColor, 6, 7)],
+            [new Rook("B", 0, 7), new Knight("B", 1, 7), new Bishop("B", 2, 7), new Queen("B", 3, 7), this.opponentKing, new Bishop("B", 5, 7), new Knight("B", 6, 7), new Rook("B", 7, 7)],
+            [new Pawn("B", 0, 6), new Pawn("B", 1, 6), new Pawn("B", 2, 6), new Pawn("B", 3, 6), new Pawn("B", 4, 6), new Pawn("B", 5, 6), new Pawn("B", 6, 6), new Pawn("B", 7, 6)],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
-            [new Pawn(this.playerColor, 1, 0), new Pawn(this.playerColor, 1, 1), new Pawn(this.playerColor, 1, 2), new Pawn(this.playerColor, 1, 3), new Pawn(this.playerColor, 1, 4), new Pawn(this.playerColor, 1, 5), new Pawn(this.playerColor, 1, 6), new Pawn(this.playerColor, 1, 7)],
-            [new Rook(this.playerColor, 0, 0), new Knight(this.playerColor, 0, 1), new Bishop(this.playerColor, 0, 2), new Queen(this.playerColor, 0, 3), this.playerKing, new Bishop(this.playerColor, 0, 5), new Knight(this.playerColor, 0, 6), new Rook(this.playerColor, 0, 7)]
+            [new Pawn("W", 0, 1), new Pawn("W", 1, 1), new Pawn("W", 2, 1), new Pawn("W", 3, 1), new Pawn("W", 4, 1), new Pawn("W", 5, 1), new Pawn("W", 6, 1), new Pawn("W", 7, 1)],
+            [new Rook("W", 0, 0), new Knight("W", 1, 0), new Bishop("W", 2, 0), new Queen("W", 3, 0), this.playerKing, new Bishop("W", 5, 0), new Knight("W", 6, 0), new Rook("W", 7, 0)]
         ];
 
     this.getKing = function (color) {
@@ -133,18 +139,26 @@ function Board(color) {
         return pieces;
     };
 
-    this.move = function (position, to) {
-        if (this.checkValidity(position, to)) {
-            let row = position.row;
-            let column = position.column;
-            this.board[to.row][to.column] = this.board[row][column];
-            this.board[row][column] = null;
+    this.move = function (rowFrom, columnFrom, rowTo, columnTo) {
+        if (this.checkValidity(rowFrom, columnFrom, rowTo, columnTo)) {
+            this.board[rowTo][columnTo] = this.board[rowFrom][columnFrom];
+            this.board[rowFrom][columnFrom] = null;
+            this.drawMove(rowFrom, columnFrom, rowTo, columnTo);
         } else {
             alert("Invalid move!");
         }
     };
 
+    this.drawMove = function (rowFrom, columnFrom, rowTo, columnTo) {
+        let divIDFrom = translateCoordinates(rowFrom, columnFrom);
+        let $image = $("#" + divIDFrom + " img:last-child").get();
+        $("#" + divIDFrom + " img:last-child").remove();
+        let divIDTo = translateCoordinates(rowTo, columnTo);
+        $("#" + divIDTo).append($image);
+    };
+
     this.checkValidity = function (position, to) {
+        return true;
         if (position.row === to.row && position.column === to.column) {
             return false;
         }
@@ -177,7 +191,7 @@ function Board(color) {
                     row = j;    //0
                     column = i; //7
                 }
-                $tile.id = rowLetter(row) + (column + 1).toString();
+                $tile.id = translateCoordinates(row, column);
                 $tile.setAttribute("row", row);
                 $tile.setAttribute("column", column);
                 $("#board").append($tile);
@@ -198,21 +212,21 @@ function Board(color) {
         for (i; i <= 16; i++) {
             let row = Math.floor((i - 1) / 8);
             let column = (i - 1) % 8;
-            let type = this.board[row][column];
-            let image = type.constructor.name;
+            let piece = this.board[row][column];
+            let image = piece.constructor.name;
             let $img = document.createElement("img");
-            $img.src = "../images/" + this.opponentColor + image + ".png";
-            $("#board div:nth-child(" + i + ")").prepend($img);
+            $img.src = "../images/B" + image + ".png";
+            $("#" + translateCoordinates(piece.position.row, piece.position.column)).prepend($img);
         }
         i = 49;
         for (i; i <= 64; i++) {
             let row = Math.floor((i - 1) / 8);
             let column = (i - 1) % 8;
-            let type = this.board[row][column];
-            let image = type.constructor.name;
+            let piece = this.board[row][column];
+            let image = piece.constructor.name;
             let $img = document.createElement("img");
-            $img.src = "../images/" + this.playerColor + image + ".png";
-            $("#board div:nth-child(" + i + ")").prepend($img);
+            $img.src = "../images/W" + image + ".png";
+            $("#" + translateCoordinates(piece.position.row, piece.position.column)).prepend($img);
         }
     };
 }
