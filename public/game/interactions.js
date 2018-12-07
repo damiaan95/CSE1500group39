@@ -21,6 +21,7 @@
 
         if (incomingMessage.type === Messages.T_PLAYER_B) {
             gameStateObj.setPlayerColor("B");
+
             gameStateObj.setBoard(new Board("B"));
             gameStateObj.getBoard().drawBoard();
 
