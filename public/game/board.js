@@ -33,12 +33,12 @@ function Pawn(color) {
 Pawn.prototype = Object.create(MovesPiece.prototype);
 Pawn.prototype.constructor = Pawn;
 
-function Tower(color) {
+function Rook(color) {
     Piece.call(this, color);
 }
 
-Tower.prototype = Object.create(Piece.prototype);
-Tower.prototype.constructor = Tower;
+Rook.prototype = Object.create(Piece.prototype);
+Rook.prototype.constructor = Rook;
 
 function Knight(color) {
     Piece.call(this, color);
@@ -47,7 +47,7 @@ function Knight(color) {
 Knight.prototype = Object.create(Piece.prototype);
 Knight.prototype.constructor = Knight;
 
-function Rook(color) {
+function Bishop(color) {
     Piece.call(this, color);
 }
 
@@ -82,14 +82,14 @@ function Board(color) {
 
     this.board =
         [
-            [new Tower(this.opponentColor, 0, 0), new Knight(this.opponentColor, 0, 1), new Rook(this.opponentColor, 0, 2), new Queen(this.opponentColor, 0, 3), this.opponentKing, new Rook(this.opponentColor, 0, 5), new Knight(this.opponentColor, 0, 6), new Tower(this.opponentColor, 0, 7)],
+            [new Rook(this.opponentColor, 0, 0), new Knight(this.opponentColor, 0, 1), new Bishop(this.opponentColor, 0, 2), new Queen(this.opponentColor, 0, 3), this.opponentKing, new Bishop(this.opponentColor, 0, 5), new Knight(this.opponentColor, 0, 6), new Rook(this.opponentColor, 0, 7)],
             [new Pawn(this.opponentColor, 1, 0), new Pawn(this.opponentColor, 1, 1), new Pawn(this.opponentColor, 1, 2), new Pawn(this.opponentColor, 1, 3), new Pawn(this.opponentColor, 1, 4), new Pawn(this.opponentColor, 1, 5), new Pawn(this.opponentColor, 1, 6), new Pawn(this.opponentColor, 1, 7)],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [new Pawn(this.playerColor, 6, 0), new Pawn(this.playerColor, 6, 1), new Pawn(this.playerColor, 6, 2), new Pawn(this.playerColor, 6, 3), new Pawn(this.playerColor, 6, 4), new Pawn(this.playerColor, 6, 5), new Pawn(this.playerColor, 6, 6), new Pawn(this.playerColor, 6, 7)],
-            [new Tower(this.playerColor, 7, 0), new Knight(this.playerColor, 7, 1), new Rook(this.playerColor, 7, 2), new Queen(this.playerColor, 7, 3), this.playerKing, new Rook(this.playerColor, 7, 5), new Knight(this.playerColor, 7, 6), new Tower(this.playerColor, 7, 7)]
+            [new Rook(this.playerColor, 7, 0), new Knight(this.playerColor, 7, 1), new Bishop(this.playerColor, 7, 2), new Queen(this.playerColor, 7, 3), this.playerKing, new Bishop(this.playerColor, 7, 5), new Knight(this.playerColor, 7, 6), new Rook(this.playerColor, 7, 7)]
         ];
 
     this.getKing = function (color) {
