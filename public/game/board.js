@@ -4,6 +4,11 @@ function Piece(color, row, column) {
         row: row,
         column: column
     }
+    this.moves = {
+        hor: 1,
+        ver: 1,
+        diag: 1
+    }
 }
 
 Piece.prototype.getPosition = function () {
@@ -28,6 +33,9 @@ MovesPiece.prototype.isMoved = function () {
 
 function Pawn(color, column, row) {
     MovesPiece.call(this, color, column, row);
+    this.moves = {
+        ver: 1,
+    }
 }
 
 Pawn.prototype = Object.create(MovesPiece.prototype);
@@ -35,6 +43,10 @@ Pawn.prototype.constructor = Pawn;
 
 function Rook(color, column, row) {
     Piece.call(this, color, column, row);
+    this.moves = {
+        hor: 1,
+        ver: 1,
+    }
 }
 
 Rook.prototype = Object.create(Piece.prototype);
@@ -42,6 +54,7 @@ Rook.prototype.constructor = Rook;
 
 function Knight(color, column, row) {
     Piece.call(this, color, column, row);
+    
 }
 
 Knight.prototype = Object.create(Piece.prototype);
@@ -49,6 +62,9 @@ Knight.prototype.constructor = Knight;
 
 function Bishop(color, column, row) {
     Piece.call(this, color, column, row);
+    this.moves = {
+        diag: 1
+    }
 }
 
 Knight.prototype = Object.create(Piece.prototype);
@@ -127,6 +143,12 @@ function Board(color) {
         }
     };
 
+    this.getPiece = function(x, y) {
+        console.log(x + "," + y);
+        //console.log(this.board[y][x]);
+        return this.board[y][x];
+    }
+
     this.getPieces = function (color) {
         var pieces = [];
         for (var row in this.board) {
@@ -141,8 +163,8 @@ function Board(color) {
 
     this.move = function (rowFrom, columnFrom, rowTo, columnTo) {
         if (this.checkValidity(rowFrom, columnFrom, rowTo, columnTo)) {
-            this.board[rowTo][columnTo] = this.board[rowFrom][columnFrom];
-            this.board[rowFrom][columnFrom] = null;
+            this.board[columnTo][rowTo] = this.getPiece(rowFrom,columnFrom);
+            this.board[columnFrom][rowFrom] = null;
             this.drawMove(rowFrom, columnFrom, rowTo, columnTo);
         } else {
             alert("Invalid move!");
@@ -157,13 +179,64 @@ function Board(color) {
         $("#" + divIDTo).append($image);
     };
 
-    this.checkValidity = function (position, to) {
-        return true;
-        if (position.row === to.row && position.column === to.column) {
+    this.checkValidity = function (rowFrom, columnFrom, rowTo, columnTo) {
+        //try to move to the same position.
+        if (rowFrom === rowTo && columnFrom === columnTo) {
             return false;
         }
-        let piece = this.board[position.row][position.column];
-        //to do
+        
+        let piece = this.getPiece(rowFrom, columnFrom);
+        //this is actually a piece.
+        if(piece !== null) {
+            //try to move on top of friendly piece.
+            let posTo = this.getPiece(rowTo, columnTo);
+            if(posTo instanceof Piece && posTo.color === piece.color) {
+                return false;
+            }
+
+            let rpath = rowTo - rowFrom;
+            let cpath = columnTo - columnFrom;
+            let xvec = 0;
+            let yvec = 0;
+            if(rpath !== 0) {
+                xvec = rpath/Math.abs(rpath);
+            }
+            if(cpath !== 0){
+                yvec= cpath/Math.abs(cpath);
+            }
+            //There are no pieces in the way.
+            if(this.isPathClear(rowFrom, columnFrom, rpath, cpath, xvec, yvec)) {
+                //move is diagonal and piece can move diagonally.
+                if(Math.abs(rpath) === Math.abs(cpath) && piece.moves.diag === 1) {
+                    return true;
+                } else 
+                //move is vertical and piece can move vertically.
+                if(rpath === 0 && piece.moves.ver === 1) {
+                   return true;
+                } else
+                //move is horizontal and piece can move horizontally.
+                if(cpath === 0 && piece.moves.hor === 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+
+    this.isPathClear = function(rowFrom, columnFrom, rpath, cpath, xvec, yvec) {
+        let i = 1;
+        let j = 1;
+
+        while(i*xvec !== rpath || j*yvec !== cpath) {
+            console.log(i);
+            console.log(j);
+            console.log(this.board[columnFrom + j*yvec][rowFrom + i*xvec]);
+            if(this.board[columnFrom + j*yvec][rowFrom + i*xvec] !== null) {
+                return false;
+            }
+            i++;
+            j++;
+        }
         return true;
     };
 
