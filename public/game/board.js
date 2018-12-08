@@ -1,5 +1,6 @@
-function Piece(color, row, column) {
+function Piece(color, row, column, type) {
     this.color = color;
+    this.type = type;
     this.position = {
         row: row,
         column: column
@@ -15,8 +16,8 @@ Piece.prototype.getPosition = function () {
     return this.position;
 };
 
-function MovesPiece(color, row, column) {
-    Piece.call(this, color, row, column);
+function MovesPiece(color, row, column, type) {
+    Piece.call(this, color, row, column, type);
     this.moved = false;
 }
 
@@ -32,7 +33,7 @@ MovesPiece.prototype.isMoved = function () {
 };
 
 function Pawn(color, column, row) {
-    MovesPiece.call(this, color, column, row);
+    MovesPiece.call(this, color, column, row, "Pawn");
     this.moves = {
         ver: 1,
     }
@@ -42,7 +43,7 @@ Pawn.prototype = Object.create(MovesPiece.prototype);
 Pawn.prototype.constructor = Pawn;
 
 function Rook(color, column, row) {
-    Piece.call(this, color, column, row);
+    Piece.call(this, color, column, row, "Rook");
     this.moves = {
         hor: 1,
         ver: 1,
@@ -53,7 +54,7 @@ Rook.prototype = Object.create(Piece.prototype);
 Rook.prototype.constructor = Rook;
 
 function Knight(color, column, row) {
-    Piece.call(this, color, column, row);
+    Piece.call(this, color, column, row, "Knight");
     this.moves = {};
     
 }
@@ -62,24 +63,24 @@ Knight.prototype = Object.create(Piece.prototype);
 Knight.prototype.constructor = Knight;
 
 function Bishop(color, column, row) {
-    Piece.call(this, color, column, row);
+    Piece.call(this, color, column, row, "Bishop");
     this.moves = {
         diag: 1
     }
 }
 
-Knight.prototype = Object.create(Piece.prototype);
-Knight.prototype.constructor = Knight;
+Bishop.prototype = Object.create(Piece.prototype);
+Bishop.prototype.constructor = Knight;
 
 function Queen(color, column, row) {
-    Piece.call(this, color, column, row);
+    Piece.call(this, color, column, row, "Queen");
 }
 
 Queen.prototype = Object.create(Piece.prototype);
 Queen.prototype.constructor = Queen;
 
 function King(color, column, row) {
-    MovesPiece.call(this, color, column, row);
+    MovesPiece.call(this, color, column, row, "King");
 }
 
 King.prototype = Object.create(MovesPiece.prototype);
@@ -111,6 +112,13 @@ function rowLetter(row) {
 function translateCoordinates(row, column) {
     return (rowLetter(row) + (column + 1).toString()).toString();
 }
+
+function pieceConquered(piece){
+    var $image = document.createElement('img');
+    $image.src="../images/" + piece.color + piece.type + ".png";
+    console.log($image.src)
+    $("#conquered_pieces").append($image);
+};
 
 function Board(color) {
     if (color === "W") {
@@ -162,19 +170,32 @@ function Board(color) {
 
     this.move = function (rowFrom, columnFrom, rowTo, columnTo) {
         if (this.checkValidity(rowFrom, columnFrom, rowTo, columnTo)) {
+            let posTo = this.getPiece(rowTo,columnTo);
+            console.log(posTo instanceof Piece);
+            if(posTo instanceof Piece) {
+                this.board[columnTo][rowTo] = null;
+            }
+            
             this.board[columnTo][rowTo] = this.getPiece(rowFrom,columnFrom);
             this.board[columnFrom][rowFrom] = null;
-            this.drawMove(rowFrom, columnFrom, rowTo, columnTo);
+            
+            console.log(posTo instanceof Piece);
+            this.drawMove(rowFrom, columnFrom, rowTo, columnTo, posTo);
         } else {
             alert("Invalid move!");
         }
     };
 
-    this.drawMove = function (rowFrom, columnFrom, rowTo, columnTo) {
+    this.drawMove = function (rowFrom, columnFrom, rowTo, columnTo, posTo) {
         let divIDFrom = translateCoordinates(rowFrom, columnFrom);
         let $image = $("#" + divIDFrom + " img:last-child").get();
         $("#" + divIDFrom + " img:last-child").remove();
         let divIDTo = translateCoordinates(rowTo, columnTo);
+
+        if(posTo instanceof Piece) {
+            $("#" + divIDTo + " img:last-child").remove();
+            pieceConquered(posTo);
+        }
         $("#" + divIDTo).append($image);
     };
 
