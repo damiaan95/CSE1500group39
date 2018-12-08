@@ -54,6 +54,7 @@ Rook.prototype.constructor = Rook;
 
 function Knight(color, column, row) {
     Piece.call(this, color, column, row);
+    this.moves = {};
     
 }
 
@@ -144,8 +145,6 @@ function Board(color) {
     };
 
     this.getPiece = function(x, y) {
-        console.log(x + "," + y);
-        //console.log(this.board[y][x]);
         return this.board[y][x];
     }
 
@@ -194,6 +193,15 @@ function Board(color) {
                 return false;
             }
 
+            //special case of a knight:
+            if(piece instanceof Knight) {
+                let horJump = Math.abs(rowFrom - rowTo);
+                let verJump = Math.abs(columnFrom - columnTo);
+                if((horJump === 2 && verJump === 1) || (horJump === 1 && verJump === 2)) {
+                    return true;
+                }
+            }
+
             let rpath = rowTo - rowFrom;
             let cpath = columnTo - columnFrom;
             let xvec = 0;
@@ -204,18 +212,57 @@ function Board(color) {
             if(cpath !== 0){
                 yvec= cpath/Math.abs(cpath);
             }
+
+            //special case of a MovesPiece:
+            if(piece instanceof MovesPiece) {
+                //moved pawn or king cannot do more than one step:
+                if((piece.getMoved() || piece instanceof King) && (cpath > 1 || rpath > 1)) {
+                    return false;
+                }
+                //unmoved pawn cannot do more than 2 steps:
+                if(!piece.getMoved() && piece instanceof Pawn && cpath > 2) {
+                    return false; 
+                }
+            }
+
             //There are no pieces in the way.
             if(this.isPathClear(rowFrom, columnFrom, rpath, cpath, xvec, yvec)) {
                 //move is diagonal and piece can move diagonally.
-                if(Math.abs(rpath) === Math.abs(cpath) && piece.moves.diag === 1) {
-                    return true;
-                } else 
+                if(Math.abs(rpath) === Math.abs(cpath)) {
+                    //piece is allowed to move diagonally.
+                    if(piece.moves.diag === 1) {
+                        if(piece instanceof MovesPiece && !piece.getMoved()) {
+                            piece.isMoved();
+                        }
+                        return true;
+                    }
+                    //piece is a pawn that will take an opponents piece.
+                    if(piece instanceof Pawn && posTo instanceof Piece && posTo.color !== piece.color && cpath === 1) {
+                        if(!piece.getMoved()) {
+                            piece.isMoved();
+                        }
+                        return true
+                    }
+                } 
                 //move is vertical and piece can move vertically.
                 if(rpath === 0 && piece.moves.ver === 1) {
+                    //special case for pawns:
+                    if(piece instanceof Pawn) {
+                        //pawns cannot walk backwards or take an opponents piece directly in front of them.
+                        if(posTo instanceof Piece || cpath < 0) {
+                            return false;
+                        }
+                    }
+                    if(piece instanceof MovesPiece && !piece.getMoved()) {
+                        piece.isMoved();
+                    }
                    return true;
-                } else
+                }
                 //move is horizontal and piece can move horizontally.
                 if(cpath === 0 && piece.moves.hor === 1) {
+                    if(piece instanceof MovesPiece && !piece.getMoved()) {
+                        piece.isMoved();
+                    }
                     return true;
                 }
             }
@@ -228,9 +275,6 @@ function Board(color) {
         let j = 1;
 
         while(i*xvec !== rpath || j*yvec !== cpath) {
-            console.log(i);
-            console.log(j);
-            console.log(this.board[columnFrom + j*yvec][rowFrom + i*xvec]);
             if(this.board[columnFrom + j*yvec][rowFrom + i*xvec] !== null) {
                 return false;
             }
