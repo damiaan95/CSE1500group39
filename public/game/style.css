@@ -1,10 +1,10 @@
 *{
     margin: 0;
     padding: 0;
-    background: slategray;
 }
 
 main{
+    background: slategray;
     height:800px;
     width:1200px;
 }
