@@ -1,5 +1,6 @@
 //client side
 (function setup() {
+    var move = new Audio("../sound-effects/Move.mp3");
     var socket = new WebSocket("ws://localhost:3000");
 
     /*
@@ -46,6 +47,7 @@
                 }
             } else {
                 console.log("2 click");
+                move.play();
                 let to = $(event.target);
                 console.log(to);
                 gameStateObj.getBoard().move(
