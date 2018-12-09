@@ -1,91 +1,152 @@
-main{
-    position: fixed;
-    margin-left: 175px;
-}
-
-button{
+button {
     font-size: 2em;
-    background: red;
-    border-color: red;
+    background: darkblue;
+    border-color: darkblue;
     padding: 18px 107px;
 }
 
-#game{
-    width:600px;
-    height:800px;
-    float:left;
+button:active{
+    background:red;
+    border-color: red;
+}
+
+button:hover::before{
+    content:"!";
+    font-size: 2em;
+    color:red;
+}
+
+#game {
+    width: 600px;
+    height: 800px;
+    float: left;
     padding: 75px;
 }
 
-#lost_pieces img, #conquered_pieces img{
-    height:10px;
-    width:10px;
+#lost_pieces img, #conquered_pieces img {
+    height: 10px;
+    width: 10px;
 }
 
-#board{
-    width:600px;
-    height:600px;
+#board {
+    width: 600px;
+    height: 600px;
+    position:absolute;
 }
 
-#game div[color = "Color1"]{
-    background: lightgray;
-    border: 1px solid lightgray;
-
-}
-
-#game div[color = "Color2"]{
-    background: darkblue;
-    border: 1px solid darkblue;
-}
-
-#game div{
-    border: 1px solid;
-    height: 73px;
-    width: 73px;
-    float:left;
-}
-
-#game div[color = "Color2"]:hover{
-    background:#3063b5;
-    border-color: #3063b5;
-}
-
-#game div[color = "Color1"]:hover{
-    background:#9b9999;
-    border-color: #9b9999;
-}
-
-#game div[class = "Clicked"]{
-    background: limegreen;
-    border-color:limegreen;
-}
-
-#game div[class = "Clicked"]:hover{
-    background: lawngreen;
-    border-color:lawngreen;
-}
-
-/*#buttons, #moves{*/
-    /*display:inline-list-item;*/
+/*#board:-webkit-full-screen{*/
 /*}*/
 
+
+
+#board div[color = "Color2"]:hover {
+    background: var(--hover-black);
+    transition: background .5s ease;
+    border-color: var(--hover-black);
+}
+
+#board div[color = "Color1"]:hover {
+    background: var(--hover-white);
+    transition: background .5s ease;
+    border-color: var(--hover-white);
+}
+
+#board div[class = "Clicked"] {
+    background: var(--clicked);
+    border-color: var(--clicked);
+}
+
+#board div[class = "Clicked"]:hover {
+    background: var(--clicked-hover);
+    border-color: var(--clicked-hover);
+}
+
 #moves {
-    width:300px;
-    height:500px;
-    float:left;
+    width: 300px;
+    height: 500px;
+    float: left;
     margin: 95px 75px 20px 0;
     overflow-y: scroll;
 }
 
-#moves p:nth-child(odd){
-    background: darkblue;
-    color: white;
+#moves p {
+    color: black;
+    visibility: hidden;
 }
 
-#moves p:nth-child(even){
-    background: lightgray;
-    color:black;
+#moves p:nth-child(odd) {
+    background: var(--black-color);
 }
 
+#moves p:nth-child(even) {
+    background: var(--white-color);
+}
+
+#moves p:nth-child(even):hover::after{
+    float:right;
+    content: "Move by white";
+    color: #9b9999;
+}
+
+#moves p:nth-child(odd):hover::after{
+    float: right;
+    content: "Move by black";
+    color: #9b9999;
+}
+
+#moves p {
+    visibility: visible;
+}
+
+#one_dot {
+    animation-name: one_dot;
+    animation-duration: 3s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    opacity: .0;
+}
+
+@keyframes one_dot{
+    24%{
+        opacity: .0;
+    }
+    25%, 100%{
+    opacity: 1;
+    }
+}
+
+#two_dots{
+    animation-name: two_dots;
+    animation-duration: 3s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    opacity: .0;
+}
+
+@keyframes two_dots{
+    49%{
+        opacity: .0;
+    }
+    50%, 100%{
+        opacity: 1;
+    }
+}
+
+#three_dots{
+    animation-name: three_dots;
+    animation-duration: 3s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    opacity: .0;
+}
+
+@keyframes three_dots{
+    74%{
+        opacity: .0;
+    }
+    75%, 100%{
+       opacity: 1;
+    }
+}
 
 

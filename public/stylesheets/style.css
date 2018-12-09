@@ -4,14 +4,32 @@
   font-size: 100%
 }
 
+main {
+  position: fixed;
+  margin-left: 175px;
+}
+
+:root{
+  --black-color: #fff98e;
+  --white-color: #feffea;
+  --hover-white: #9b9999;
+  --hover-black:#3063b5;
+  --clicked: limegreen;
+  --clicked-hover: lawngreen;
+}
+
 body{
-  background: #184f1a;
+  background: #efefef;
   height:800px;
   width:1200px;
 }
 
 button {
   float:left;
+}
+
+h1{
+  font-size: 5em;
 }
 
 div{
@@ -27,4 +45,20 @@ img{
 
 button{
   color: white;
+}
+
+div[color = "Color1"]{
+  background: var(--white-color);
+  border: 1px solid var(--white-color);
+}
+
+div[color = "Color2"]{
+  background: var(--black-color);
+  border: 1px solid var(--black-color);
+}
+
+div[color="Color1"], div[color="Color2"]{
+  height: 73px;
+  width: 73px;
+  float:left;
 }
