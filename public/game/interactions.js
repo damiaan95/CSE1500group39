@@ -42,8 +42,12 @@
                 } else {
                     console.log("1 click");
                     clicked = $(event.target);
-                    clicked.addClass("Clicked")
-                    console.log(clicked);
+                    if(clicked.children().length > 0){
+                        clicked.addClass("Clicked")
+                        console.log(clicked);
+                    }else{
+                        clicked = null;
+                    }
                 }
             } else {
                 console.log("2 click");
