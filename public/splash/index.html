@@ -1,38 +1,40 @@
 <!DOCTYPE html>
 
 <html>
-    <head>
-        <title>Splash screen</title>
-        <link href="style.css" rel="stylesheet" type="text/css">
-    </head>
-    <body>
-        <main>
-            <section id="left">
-                <h1>How to play:</h1>
-                <div id="tutorial">
-                    <img src="../images/Logo%20chess%20game.png" title="Image to be implemented of dragging piece">
-                    <img src="../images/Logo%20chess%20game.png" title="Image to be implemented of circles on the chess board">
-                </div>
-            </section>
+<head>
+    <title>Splash screen</title>
+    <link href="../stylesheets/style.css" rel="stylesheet" type="text/css">
+    <link href="../stylesheets/splash.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<main>
+    <section id="left">
+        <h1>How to play:</h1>
+        <div id="tutorial">
+            <div id="tutorial_move"></div>
 
-            <section id="right">
-                <div id="logo">
-                    <image src="../images/Logo chess game.png" title="Logo of chess game"></image>
-                </div>
+            <div id="tutorial_available"></div>
+        </div>
+    </section>
 
-                <div id="play-button">
-                    <form action="../game/index.html">
-                        <button type="submit">Play</button>
-                    </form>
-                </div>
+    <section id="right">
+        <div id="logo">
+            <image src="../images/Logo chess game.png" title="Logo of chess game"></image>
+        </div>
 
-                <div id="statistics">
-                    <h4>Statistics</h4>
-                    Amount of Games:<span id="stat1"></span></br>
-                    Amount of Players:<span id="stat2"></span></br>
-                    Rice Points: <span id="stat3"></span>
-                </div>
-            </section>
-        </main>
-    </body>
+        <div id="play-button">
+            <form action="../game/index.html">
+                <button type="submit">Play</button>
+            </form>
+        </div>
+
+        <div id="statistics">
+            <h4>Statistics</h4>
+            Amount of Games:<span id="stat1"></span></br>
+            Amount of Players:<span id="stat2"></span></br>
+            Rice Points: <span id="stat3"></span>
+        </div>
+    </section>
+</main>
+</body>
 </html>

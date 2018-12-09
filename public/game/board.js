@@ -196,9 +196,9 @@ function Board(color) {
                 $tile.setAttribute("column", column);
                 $("#board").append($tile);
                 if ((i + temp) % 2 === 0) {
-                    $("#board div:nth-child(" + ((i) * 8 + temp + 1) + ")").addClass("Color1");
+                    $tile.setAttribute("color", "Color1");
                 } else {
-                    $("#board div:nth-child(" + ((i) * 8 + temp + 1) + ")").addClass("Color2");
+                    $tile.setAttribute("color", "Color2");
                 }
                 temp++;
             }

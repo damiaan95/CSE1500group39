@@ -1,0 +1,91 @@
+main{
+    position: fixed;
+    margin-left: 175px;
+}
+
+button{
+    font-size: 2em;
+    background: red;
+    border-color: red;
+    padding: 18px 107px;
+}
+
+#game{
+    width:600px;
+    height:800px;
+    float:left;
+    padding: 75px;
+}
+
+#lost_pieces img, #conquered_pieces img{
+    height:10px;
+    width:10px;
+}
+
+#board{
+    width:600px;
+    height:600px;
+}
+
+#game div[color = "Color1"]{
+    background: lightgray;
+    border: 1px solid lightgray;
+
+}
+
+#game div[color = "Color2"]{
+    background: darkblue;
+    border: 1px solid darkblue;
+}
+
+#game div{
+    border: 1px solid;
+    height: 73px;
+    width: 73px;
+    float:left;
+}
+
+#game div[color = "Color2"]:hover{
+    background:#3063b5;
+    border-color: #3063b5;
+}
+
+#game div[color = "Color1"]:hover{
+    background:#9b9999;
+    border-color: #9b9999;
+}
+
+#game div[class = "Clicked"]{
+    background: limegreen;
+    border-color:limegreen;
+}
+
+#game div[class = "Clicked"]:hover{
+    background: lawngreen;
+    border-color:lawngreen;
+}
+
+/*#buttons, #moves{*/
+    /*display:inline-list-item;*/
+/*}*/
+
+#moves {
+    width:300px;
+    height:500px;
+    float:left;
+    margin: 95px 75px 20px 0;
+    overflow-y: scroll;
+}
+
+#moves p:nth-child(odd){
+    background: darkblue;
+    color: white;
+}
+
+#moves p:nth-child(even){
+    background: lightgray;
+    color:black;
+}
+
+
+

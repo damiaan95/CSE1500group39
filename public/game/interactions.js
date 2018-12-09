@@ -35,9 +35,15 @@
 
         $("#board div").bind("click", function (event) {
             if (clicked == null) {
-                console.log("1 click");
-                clicked = $(event.target);
-                console.log(clicked);
+                if (clicked === $(event.target)) {
+                    clicked.removeClass();
+                    clicked = null;
+                } else {
+                    console.log("1 click");
+                    clicked = $(event.target);
+                    clicked.addClass("Clicked")
+                    console.log(clicked);
+                }
             } else {
                 console.log("2 click");
                 let to = $(event.target);
@@ -45,6 +51,7 @@
                 gameStateObj.getBoard().move(
                     Number(clicked.attr("row")), Number(clicked.attr("column")),
                     Number(to.attr("row")), Number(to.attr("column")));
+                clicked.removeClass();
                 clicked = null;
             }
         });
