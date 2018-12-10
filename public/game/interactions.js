@@ -57,6 +57,7 @@
                     // console.log(toID);
                      let from = translateDivID(clickedID);
                      let to = translateDivID(toID);
+                     // console.log(clickedID + " " + toID);
                      gameStateObj.getBoard().move(from, to);
                      $clicked.removeClass();
                      $clicked = null;

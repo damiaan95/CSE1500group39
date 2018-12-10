@@ -9,7 +9,11 @@
     exports.T_MAKE_A_MOVE = "MAKE-A-MOVE";
     exports.O_MAKE_A_MOVE = {
         type: exports.T_MAKE_A_MOVE,
-        data: null
+        data: {
+            from:null,
+            to:null,
+            taken:null
+        }
     };
 
     exports.T_YOU_LOST = "YOU_LOST";
