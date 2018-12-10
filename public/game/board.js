@@ -56,7 +56,7 @@ Rook.prototype.constructor = Rook;
 function Knight(color, column, row) {
     Piece.call(this, color, column, row, "Knight");
     this.moves = {};
-    
+
 }
 
 Knight.prototype = Object.create(Piece.prototype);
@@ -140,19 +140,26 @@ function translateDivID(id) {
     let rowLetter = id.charAt(0);
     let column = Number(id.charAt(1) - 1);
     let row = letterToRow(rowLetter);
-    position = {
+    let position = {
         row: row,
-        column: column 
-    }
+        column: column
+    };
     return position;
 }
 
-function pieceConquered(piece){
+function pieceConquered(piece) {
     var $image = document.createElement('img');
-    $image.src="../images/" + piece.color + piece.type + ".png";
+    let c;
+    if(piece.color === "W"){
+        c = "B";
+    }else{
+        c = "W";
+    }
+
+    $image.src = "../images/" + c + piece.type + ".png";
     console.log($image.src)
     $("#conquered_pieces").append($image);
-};
+}
 
 function Board(color, gameState) {
     if (color === "W") {
@@ -186,21 +193,21 @@ function Board(color, gameState) {
         }
     };
 
-    this.getPiece = function(position) {
+    this.getPiece = function (position) {
         return this.board[position.column][position.row];
-    }
+    };
 
     this.getPieces = function (color) {
         var pieces = [];
         let i = 0;
         let j;
-        for(i; i<=7; i++) {
-            for(j = 0; j<=7; j++) {
+        for (i; i <= 7; i++) {
+            for (j = 0; j <= 7; j++) {
                 let position = {
                     row: i,
                     column: j
-                }
-                if(this.getPiece(position) instanceof Piece && this.getPiece(position).color === color && !(this.getPiece(position) instanceof King)){
+                };
+                if (this.getPiece(position) instanceof Piece && this.getPiece(position).color === color && !(this.getPiece(position) instanceof King)) {
                     pieces.push(this.getPiece(position));
                 }
             }
@@ -209,15 +216,13 @@ function Board(color, gameState) {
     };
 
     this.move = function (from, to) {
+        console.log(from.column + " " + from.row);
         if (this.checkValidity(from, to, true)) {
             let posTo = this.getPiece(to);
-            if(posTo instanceof Piece) {
-                this.board[to.column][to.row] = null;
-            }
-            
+            this.board[to.column][to.row] = null;
             this.board[to.column][to.row] = this.getPiece(from);
             this.board[from.column][from.row] = null;
-            
+
             this.drawMove(from, to, posTo);
             gameState.updateGameState(from, to, posTo, false);
         } else {
@@ -234,13 +239,14 @@ function Board(color, gameState) {
     };
 
     this.drawMove = function (from, to, posTo) {
+        console.log(from.column + " " + from.row);
         let divIDFrom = translateCoordinates(from.row, from.column);
+
         let $image = $("#" + divIDFrom + " img:last-child").get();
+
         $("#" + divIDFrom + " img:last-child").remove();
         let divIDTo = translateCoordinates(to.row, to.column);
-        //console.log(posTo);
         if(posTo !== null) {
-            
             $("#" + divIDTo + " img:last-child").remove();
             pieceConquered(posTo);
         }
@@ -262,10 +268,10 @@ function Board(color, gameState) {
         let piece = this.getPiece(from);
 
         //this is actually a piece.
-        if(piece !== null) {
+        if (piece !== null) {
             //try to move on top of friendly piece.
             let posTo = this.getPiece(to);
-            if(posTo instanceof Piece && posTo.color === piece.color && real) {
+            if (posTo instanceof Piece && posTo.color === piece.color && real) {
                 console.log("trying to move ontop of friendly piece");
                 return false;
             }
@@ -274,83 +280,83 @@ function Board(color, gameState) {
             let cpath = columnTo - columnFrom;
             let xvec = 0;
             let yvec = 0;
-            if(rpath !== 0) {
-                xvec = rpath/Math.abs(rpath);
+            if (rpath !== 0) {
+                xvec = rpath / Math.abs(rpath);
             }
-            if(cpath !== 0){
-                yvec= cpath/Math.abs(cpath);
+            if (cpath !== 0) {
+                yvec = cpath / Math.abs(cpath);
             }
 
             //special case of a knight:
-            if(piece instanceof Knight) {
+            if (piece instanceof Knight) {
                 let horJump = Math.abs(rpath);
                 let verJump = Math.abs(cpath);
-                if((horJump === 2 && verJump === 1) || (horJump === 1 && verJump === 2)) {
+                if ((horJump === 2 && verJump === 1) || (horJump === 1 && verJump === 2)) {
                     return true;
                 }
             }
 
             //special case of a MovesPiece:
-            if(piece instanceof MovesPiece) {
+            if (piece instanceof MovesPiece) {
                 //moved pawn or king cannot do more than one step:
-                if((piece.getMoved() || piece instanceof King) && (cpath > 1 || rpath > 1)) {
+                if ((piece.getMoved() || piece instanceof King) && (cpath > 1 || rpath > 1)) {
                     console.log("trying to move too far");
                     return false;
                 }
                 //a king cannot move to a position where it would be checked.
-                if(piece instanceof King && real) {
+                if (piece instanceof King && real) {
                     console.log(piece);
-                    if(this.isPositionChecked(to, piece.color)) {
-                       console.log("king cannot move to a position where it would be checked");
+                    if (this.isPositionChecked(to, piece.color)) {
+                        console.log("king cannot move to a position where it would be checked");
                         return false;
                     }
                 }
                 //unmoved pawn cannot do more than 2 steps:
-                if(!piece.getMoved() && piece instanceof Pawn && cpath > 2) {
+                if (!piece.getMoved() && piece instanceof Pawn && cpath > 2) {
                     console.log("pawn cant move more than two steps");
-                    return false; 
+                    return false;
                 }
             }
 
             //a move cannot be made if this would result in our king being checked.
-           // if(!(piece instanceof King) && this.kingIsCheckedAfterMove(from, to, piece) && real) {
-             //    console.log("If this piece moves, the king would be checked");
-               //  return false;
+            // if(!(piece instanceof King) && this.kingIsCheckedAfterMove(from, to, piece) && real) {
+            //    console.log("If this piece moves, the king would be checked");
+            //  return false;
             // }
 
             //There are no pieces in the way.
-            if(this.isPathClear(from, rpath, cpath, xvec, yvec)) {
+            if (this.isPathClear(from, rpath, cpath, xvec, yvec)) {
                 //move is diagonal and piece can move diagonally.
-                if(Math.abs(rpath) === Math.abs(cpath)) {
+                if (Math.abs(rpath) === Math.abs(cpath)) {
                     //piece is allowed to move diagonally.
-                    if(piece.moves.diag === 1) {
-                        if(piece instanceof MovesPiece && !piece.getMoved() && real) {
+                    if (piece.moves.diag === 1) {
+                        if (piece instanceof MovesPiece && !piece.getMoved() && real) {
                             piece.isMoved();
                         }
                         return true;
                     }
                     //piece is a pawn that will take an opponents piece.
-                    if(piece instanceof Pawn && Math.abs(cpath) === 1) {
+                    if (piece instanceof Pawn && Math.abs(cpath) === 1) {
                         console.log("pawn diagonal");
-                        if(posTo instanceof Piece && posTo.color !== piece.color && real) {
+                        if (posTo instanceof Piece && posTo.color !== piece.color && real) {
                             console.log("pawn can take!");
-                            if(!piece.getMoved()) {
+                            if (!piece.getMoved()) {
                                 piece.isMoved();
                             }
                             return true
                         }
-                        if(!real) {
+                        if (!real) {
                             console.log("pawn faking a move");
                             console.log(piece);
                             return true;
                         }
                     }
                 }
-                
+
                 //move is vertical and piece can move vertically.
-                if(rpath === 0 && piece.moves.ver === 1) {
+                if (rpath === 0 && piece.moves.ver === 1) {
                     //special case for pawns:
-                    if(piece instanceof Pawn) {
+                    if (piece instanceof Pawn) {
                         //pawns cannot walk backwards or take an opponents piece directly in front of them.
                         if(posTo instanceof Piece) {
                             return false;
@@ -363,14 +369,14 @@ function Board(color, gameState) {
                             return false;
                         }
                     }
-                    if(piece instanceof MovesPiece && !piece.getMoved() && real) {
+                    if (piece instanceof MovesPiece && !piece.getMoved() && real) {
                         piece.isMoved();
                     }
-                   return true;
+                    return true;
                 }
                 //move is horizontal and piece can move horizontally.
-                if(cpath === 0 && piece.moves.hor === 1) {
-                    if(piece instanceof MovesPiece && !piece.getMoved() && real) {
+                if (cpath === 0 && piece.moves.hor === 1) {
+                    if (piece instanceof MovesPiece && !piece.getMoved() && real) {
                         piece.isMoved();
                     }
                     return true;
@@ -381,12 +387,12 @@ function Board(color, gameState) {
         return false;
     };
 
-    this.isPathClear = function(from, rpath, cpath, xvec, yvec) {
+    this.isPathClear = function (from, rpath, cpath, xvec, yvec) {
         let i = 1;
         let j = 1;
 
-        while(i*xvec !== rpath || j*yvec !== cpath) {
-            if(this.board[from.column + j*yvec][from.row + i*xvec] !== null) {
+        while (i * xvec !== rpath || j * yvec !== cpath) {
+            if (this.board[from.column + j * yvec][from.row + i * xvec] !== null) {
                 return false;
             }
             i++;
@@ -395,17 +401,17 @@ function Board(color, gameState) {
         return true;
     };
 
-    this.isPositionChecked = function(to) {
-       // console.log("reached!");
+    this.isPositionChecked = function (to) {
+        // console.log("reached!");
         //console.log(this.getPiece(kingpos).color === "W")
         let checked = false;
-        if(this.playerColor === "W") {
+        if (this.playerColor === "W") {
             console.log("black");
             let blackPieces = this.getPieces("B");
             blackPieces.forEach(p => {
                 let from = p.position;
                 console.log(p);
-                if(this.checkValidity(from, to, false)) {
+                if (this.checkValidity(from, to, false)) {
                     console.log("checked!");
                     checked = true;
                 }
@@ -416,7 +422,7 @@ function Board(color, gameState) {
             whitePieces.forEach(p => {
                 let from = p.position;
                 console.log(p);
-                if(this.checkValidity(from, to, false)) {
+                if (this.checkValidity(from, to, false)) {
                     console.log("checked!");
                     checked = true;
                 }
@@ -425,7 +431,7 @@ function Board(color, gameState) {
         return checked;
     };
 
-    this.kingIsCheckedAfterMove = function(from, to, piece) {
+    this.kingIsCheckedAfterMove = function (from, to, piece) {
         //console.log(this.playerColor);
         //console.log(piece.color);
         let kingPos = this.getKing(piece.color).position;
@@ -436,7 +442,7 @@ function Board(color, gameState) {
         this.board[from.column][from.row] = null;
 
         //check if the king would be checked by this move.
-        if(this.isPositionChecked(kingPos, piece.color)){
+        if (this.isPositionChecked(kingPos, piece.color)) {
             checked = true;
         }
 
@@ -517,7 +523,7 @@ function Board(color, gameState) {
         let i = 0;
         let j;
         for (i; i <= 1; i++) {
-            for(j = 0; j<=7; j++) {
+            for (j = 0; j <= 7; j++) {
                 let row = i
                 let column = j
                 let piece = this.board[row][column];
@@ -531,7 +537,7 @@ function Board(color, gameState) {
             }
         }
         for (i = 6; i <= 7; i++) {
-            for(j = 0; j <= 7; j++){
+            for (j = 0; j <= 7; j++) {
                 let row = i;
                 let column = j;
                 let piece = this.board[row][column];
@@ -543,5 +549,6 @@ function Board(color, gameState) {
                 $("#" + translateCoordinates(piece.position.row, piece.position.column)).prepend($img);
             }
         }
+
     };
 }

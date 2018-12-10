@@ -15,9 +15,9 @@
     exports.O_MAKE_A_MOVE = {
         type: exports.T_MAKE_A_MOVE,
         data: {
-            from: null,
-            to: null,
-            taken: null
+            from:null,
+            to:null,
+            taken:null
         }
     };
 
