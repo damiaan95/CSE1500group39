@@ -1,10 +1,21 @@
+#right{
+    float: right;
+    height: 800px;
+    width: 400px;
+    position: relative;
+}
+
 button {
     font-size: 2em;
     background: darkblue;
     border-color: darkblue;
     padding: 18px 107px;
-    position: relative;
-    left: 150px;
+    float: left;
+    position: absolute;
+    /*right: 300px;*/
+    bottom: 80px;
+    /*top: 25px;*/
+    right: 50px;
 }
 
 button:active{
@@ -22,7 +33,10 @@ button:hover::before{
     width: 600px;
     height: 800px;
     float: left;
-    padding: 75px;
+    /*padding: 75px;*/
+    position:fixed;
+    top: 75px;
+    left: 100px;
 }
 
 #lost_pieces img, #conquered_pieces img {
@@ -33,9 +47,6 @@ button:hover::before{
 #board {
     width: 600px;
     height: 600px;
-    position:fixed;
-    bottom: 75px;
-    left: 200px;
 
 }
 
@@ -73,8 +84,8 @@ button:hover::before{
     float: left;
     margin: 95px 75px 20px 0;
     overflow-y: scroll;
-    position: relative;
-    left: 150px;
+    position: absolute;
+    top: 0px;
 }
 
 #moves p {
