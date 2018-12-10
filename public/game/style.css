@@ -80,3 +80,7 @@ main{
     justify-content: center;
 }
 
+img{
+    pointer-events: none;
+}
+

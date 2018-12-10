@@ -27,8 +27,8 @@
             <div color="Color2"></div>
             <div color="Color1"></div>
             <div id="animation" color="Color2">
-                <img id="piece" src="../images/BKing.png">
-                <img id="cursor" src="../images/cursor.png">
+                <img id="piece" src="images/BKing.png">
+                <img id="cursor" src="images/cursor.png">
                 <!--<img id ="hand-cursor" src="../images/hand-cursor.png">-->
             </div>
             <div color="Color1"></div>
@@ -49,14 +49,13 @@
         <div id="statistics">
             <h4>Statistics</h4>
             <p>
-                Amount of Games:<span id="stat1"></span></br>
-                Amount of Players:<span id="stat2"></span></br>
-                Rice Points: <span id="stat3"></span>
+                Players connected: <span id="stat1"><%= players_connected %></span></br>
+                Games won: <span id="stat2"><%= games_won %></span></br>
+                Queens conquered: <span id="stat3"><%= queens_conquered %></span>
             </p>
         </div>
     </div>
 </main>
 <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
-<script src="splash.js"></script>
 </body>
 </html>

@@ -4,22 +4,20 @@ var websocket = require("ws");
 
  var messages = require("./public/game/messages");
 //
-// var gameStatistics = require("./statTracker");
+var gameStatus = require("./statTracker");
 var Game = require("./gamestate");
 
 var port = process.argv[2];
 var app = express();
 
-//app.set("view engine", "ejs");
+app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 
-app.get('/splash/', function (req, res) {
-    res.sendFile("index.html", {root: "./public/splash"});
-    //res.render("splash.ejs", {gamesInitialized: gameStatus.gamesInitialized, gamesCompleted: gameStatus.gamesCompleted});
+app.get('/', (req, res) => {
+    res.render("splash.ejs", { players_connected: gameStatus.playersConnected, games_won: gameStatus.gamesWon, queens_conquered: gameStatus.queensConquered});
 });
 
-
-app.get('/game/', function (req, res) {
+app.get('/game', function (req, res) {
     res.sendFile("index.html", {root: "./public/game"});
 });
 
@@ -45,9 +43,11 @@ var pendingGame = new Game(0);//gameStatus.gamesInitialized++
 var connectionID = 0;
 
 wss.on("connection", function connection(ws) {
+    console.log("connected....");
     let newPlayer = ws;
     newPlayer.id = connectionID++;
     let playerType = pendingGame.addPlayer(newPlayer);
+    gameStatus.playersConnected++;
     websockets[newPlayer.id] = pendingGame;
 
     console.log("Player %s placed in game %s as %s", newPlayer.id, pendingGame.id, playerType);
@@ -55,9 +55,12 @@ wss.on("connection", function connection(ws) {
     /*
      * Inform the client about its assigned player type
      */
+
     newPlayer.send((playerType === "W") ? messages.S_PLAYER_W : messages.S_PLAYER_B);
 
     if (pendingGame.hasTwoConnectedPlayers()) {
+        pendingGame.setState("W TURN");
+        pendingGame.white.send(messages.S_START_GAME);
         pendingGame = new Game(connectionID);//gameStatus.gamesInitialized++
     }
 
@@ -66,17 +69,21 @@ wss.on("connection", function connection(ws) {
 
         let gameObj = websockets[newPlayer.id];
         let isPlayerW = (gameObj.white === newPlayer);
-
+        
         if (gameObj.hasTwoConnectedPlayers()) {
             if (mess.type === messages.T_MAKE_A_MOVE) {
+                if(mess.data.taken.type === "Queen"){
+                    gameStatus.queensConquered++;
+                }
                 if (isPlayerW) {
-                    gameObj.black.send(message);
                     gameObj.setState("B TURN");
+                    gameObj.black.send(message);  
                 } else {
-                    gameObj.white.send(message);
                     gameObj.setState("W TURN");
+                    gameObj.white.send(message);
                 }
                 if (mess.type === messages.T_GAME_WON) {
+                    gameStatus.gamesWon++;
                     if (isPlayerW) {
                         gameObj.black.send(messages.S_YOU_LOST);
                         gameObj.setState("W WON");
@@ -102,6 +109,7 @@ wss.on("connection", function connection(ws) {
             try {
                 gameObj.white.close();
                 gameObj.white = null;
+                gameStatus.playersConnected--;
             } catch (e) {
                 console.log("White player closing: " + e);
             }
@@ -109,6 +117,7 @@ wss.on("connection", function connection(ws) {
             try {
                 gameObj.black.close();
                 gameObj.black = null;
+                gameStatus.playersConnected--;
             } catch(e) {
                 console.log("Black player closing: " + e);
             }

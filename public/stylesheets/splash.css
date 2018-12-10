@@ -1,0 +1,170 @@
+@media (max-width: 600px) and (max-height: 600px){
+    #Alert::after{
+        content: "This screen is smaller than recommended";
+        background: red;
+        color:white;
+    }
+}
+
+main {
+    position: fixed;
+    margin-left: 175px;
+}
+
+h1{
+    padding-top: 50px;
+    padding-left: 50px;
+}
+
+p{
+    padding-left: 50px;
+}
+
+button{
+    background:darkblue;
+    color: white;
+    border-color: darkblue;
+    padding:50px;
+    position: fixed;
+    bottom:150px;
+    right:470px;
+    font-size: 1em;
+}
+
+button:hover::before{
+    content:"Click To ";
+}
+
+button:hover::after{
+    content: "!";
+}
+
+#tutorial_move{
+    width: 300px;
+    height: 300px;
+    padding: 75px;
+    float:left;
+}
+
+img{
+    padding:50px;
+    float:right;
+}
+
+#tutorial_move div{
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+}
+
+#right{
+    width: 500px;
+}
+#statistics{
+    float:right;
+}
+
+#logo{
+    float: right;
+}
+
+button:hover{
+    font-size: 2em;
+    transition: font-size 2s ease;
+}
+
+button:active{
+    background: green;
+}
+
+#piece{
+    animation-name: piece;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    position:absolute;
+    bottom: 20px;
+}
+
+@keyframes piece{
+    69%{
+        bottom: 20px;
+    }
+    85%{
+        bottom: 170px;
+    }
+    100%{
+        bottom: 170px;
+    }
+}
+
+
+#cursor{
+    animation-name: cursor;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    position: absolute;
+}
+
+@keyframes cursor{
+   0%{
+       bottom: 40px;
+   }
+    5%{
+        bottom: 60px;
+    }
+    15%{
+        bottom:60px;
+    }
+    100%{
+        bottom: 170px;
+    }
+}
+
+#animation{
+    animation-name: clicked;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes clicked{
+    5%{
+        background-color: var(--clicked-hover);
+    }
+    19%{
+        background: var(--clicked-hover);
+    }
+    35%{
+        background-color:var(--clicked);
+    }
+    80%{
+        background-color: var(--clicked);
+    }
+    81%{
+        background-color: var(--black-color);
+    }
+}
+
+#left{
+    height: 600px;
+    width:600px;
+    display: block;
+    float:left;
+    /*align-items: center;*/
+    /*align-content: center;*/
+    /*justify-content: center;*/
+}
+
+#right {
+    height: 600px;
+    width: 300px;
+    display: block;
+    float: right;
+}
+
+#statistics{
+
+}
