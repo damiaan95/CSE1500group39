@@ -1,5 +1,10 @@
 (function(exports){
 
+    exports.O_START_GAME = {
+        type: "START-GAME"
+    }
+    exports.S_START_GAME = JSON.stringify(exports.O_START_GAME);
+
     exports.T_GAME_WON = "GAME-WON";             
     exports.O_GAME_WON = {
         type: exports.T_GAME_WON
@@ -9,7 +14,11 @@
     exports.T_MAKE_A_MOVE = "MAKE-A-MOVE";
     exports.O_MAKE_A_MOVE = {
         type: exports.T_MAKE_A_MOVE,
-        data: null
+        data: {
+            from: null,
+            to: null,
+            taken: null
+        }
     };
 
     exports.T_YOU_LOST = "YOU_LOST";

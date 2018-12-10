@@ -55,9 +55,12 @@ wss.on("connection", function connection(ws) {
     /*
      * Inform the client about its assigned player type
      */
+
     newPlayer.send((playerType === "W") ? messages.S_PLAYER_W : messages.S_PLAYER_B);
 
     if (pendingGame.hasTwoConnectedPlayers()) {
+        pendingGame.setState("W TURN");
+        pendingGame.white.send(messages.S_START_GAME);
         pendingGame = new Game(connectionID);//gameStatus.gamesInitialized++
     }
 
@@ -66,15 +69,15 @@ wss.on("connection", function connection(ws) {
 
         let gameObj = websockets[newPlayer.id];
         let isPlayerW = (gameObj.white === newPlayer);
-
+        
         if (gameObj.hasTwoConnectedPlayers()) {
             if (mess.type === messages.T_MAKE_A_MOVE) {
                 if (isPlayerW) {
-                    gameObj.black.send(message);
                     gameObj.setState("B TURN");
+                    gameObj.black.send(message);  
                 } else {
-                    gameObj.white.send(message);
                     gameObj.setState("W TURN");
+                    gameObj.white.send(message);
                 }
                 if (mess.type === messages.T_GAME_WON) {
                     if (isPlayerW) {

@@ -37,9 +37,6 @@ function Pawn(color, column, row) {
     this.moves = {
         ver: 1,
     }
-    this.deck = {
-        diag: 1
-    }
 }
 
 Pawn.prototype = Object.create(MovesPiece.prototype);
@@ -157,7 +154,7 @@ function pieceConquered(piece){
     $("#conquered_pieces").append($image);
 };
 
-function Board(color) {
+function Board(color, gameState) {
     if (color === "W") {
         this.playerColor = "W";
         this.opponentColor = "B";
@@ -166,26 +163,26 @@ function Board(color) {
         this.opponentColor = "W";
     }
 
-    this.playerKing = new King(this.playerColor, 4, 0);
-    this.opponentKing = new King(this.opponentColor, 4, 7);
+    this.whiteKing = new King("W", 4, 0);
+    this.blackKing = new King("B", 4, 7);
 
     this.board =
         [
-            [new Rook("B", 0, 7), new Knight("B", 1, 7), new Bishop("B", 2, 7), new Queen("B", 3, 7), this.opponentKing, new Bishop("B", 5, 7), new Knight("B", 6, 7), new Rook("B", 7, 7)],
+            [new Rook("B", 0, 7), new Knight("B", 1, 7), new Bishop("B", 2, 7), new Queen("B", 3, 7), this.blackKing, new Bishop("B", 5, 7), new Knight("B", 6, 7), new Rook("B", 7, 7)],
             [new Pawn("B", 0, 6), new Pawn("B", 1, 6), new Pawn("B", 2, 6), new Pawn("B", 3, 6), new Pawn("B", 4, 6), new Pawn("B", 5, 6), new Pawn("B", 6, 6), new Pawn("B", 7, 6)],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [new Pawn("W", 0, 1), new Pawn("W", 1, 1), new Pawn("W", 2, 1), new Pawn("W", 3, 1), new Pawn("W", 4, 1), new Pawn("W", 5, 1), new Pawn("W", 6, 1), new Pawn("W", 7, 1)],
-            [new Rook("W", 0, 0), new Knight("W", 1, 0), new Bishop("W", 2, 0), new Queen("W", 3, 0), this.playerKing, new Bishop("W", 5, 0), new Knight("W", 6, 0), new Rook("W", 7, 0)]
+            [new Rook("W", 0, 0), new Knight("W", 1, 0), new Bishop("W", 2, 0), new Queen("W", 3, 0), this.whiteKing, new Bishop("W", 5, 0), new Knight("W", 6, 0), new Rook("W", 7, 0)]
         ];
 
     this.getKing = function (color) {
-        if (color === this.playerColor) {
-            return this.playerKing;
+        if (color === "W") {
+            return this.whiteKing;
         } else {
-            return this.opponentKing;
+            return this.blackKing;
         }
     };
 
@@ -222,9 +219,18 @@ function Board(color) {
             this.board[from.column][from.row] = null;
             
             this.drawMove(from, to, posTo);
+            gameState.updateGameState(from, to, posTo, false);
         } else {
-            alert("Invalid move!");
+            console.log("invalid move");
         }
+    };
+
+    this.moveFromOpponent = function (from, to, posTo) {
+        this.board[to.column][to.row] = null;
+        
+        this.board[to.column][to.row] = this.getPiece(from);
+        this.board[from.column][from.row] = null;
+        this.drawMove(from, to, posTo);
     };
 
     this.drawMove = function (from, to, posTo) {
@@ -232,8 +238,8 @@ function Board(color) {
         let $image = $("#" + divIDFrom + " img:last-child").get();
         $("#" + divIDFrom + " img:last-child").remove();
         let divIDTo = translateCoordinates(to.row, to.column);
-        console.log(posTo);
-        if(posTo instanceof Piece) {
+        //console.log(posTo);
+        if(posTo !== null) {
             
             $("#" + divIDTo + " img:last-child").remove();
             pieceConquered(posTo);
@@ -335,6 +341,7 @@ function Board(color) {
                         }
                         if(!real) {
                             console.log("pawn faking a move");
+                            console.log(piece);
                             return true;
                         }
                     }
@@ -345,7 +352,14 @@ function Board(color) {
                     //special case for pawns:
                     if(piece instanceof Pawn) {
                         //pawns cannot walk backwards or take an opponents piece directly in front of them.
-                        if(posTo instanceof Piece || cpath < 0) {
+                        if(posTo instanceof Piece) {
+                            return false;
+                        }
+                        if(this.playerColor === "W" && cpath<0) {
+                            console.log("pawn cannot walk backwards");
+                            return false;
+                        }
+                        if(this.playerColor === "B" && cpath>0) { 
                             return false;
                         }
                     }
@@ -363,6 +377,7 @@ function Board(color) {
                 }
             }
         }
+        console.log("something else");
         return false;
     };
 
@@ -432,10 +447,36 @@ function Board(color) {
         return checked;
     };
 
-    this.getAllPossibleMoves = function (from, gs) {
+    this.getAllPossibleMoves = function (from) {
         let moves = [];
-        let piece = gs.board.getPiece(from);
-        //to do
+        let piece = this.getPiece(from);
+        if(piece instanceof Piece) {
+            let position = piece.position;
+            let row = position.row;
+            let column = position.column;
+            //to do
+            if(piece instanceof King) {
+                let i = -1;
+                let j;
+                for(i; i<2; i++) {
+                    for(j = -1; j<2; j++) {
+                        let nRow = row + i;
+                        let nColumn = column + j;
+                        if(nRow >= 0 && nColumn >= 0 && nRow <= 7 && nColumn <= 7) {
+                            console.log("inside the board!");
+                            let to = {
+                                row: nRow,
+                                column: nColumn
+                            }
+                            if(this.checkValidity(from, to, false)){
+                                console.log("there is a move!");
+                                moves.push(to);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return moves;
     };
 
@@ -481,7 +522,7 @@ function Board(color) {
                 let column = j
                 let piece = this.board[row][column];
                 let image = piece.constructor.name;
-                console.log(piece.constructor.name);
+                //console.log(piece.constructor.name);
                 let $img = document.createElement("img");
                 $img.src = "../images/B" + image + ".png";
                 //console.log(piece.position.row);
