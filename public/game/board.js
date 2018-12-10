@@ -37,6 +37,9 @@ function Pawn(color, column, row) {
     this.moves = {
         ver: 1,
     }
+    this.deck = {
+        diag: 1
+    }
 }
 
 Pawn.prototype = Object.create(MovesPiece.prototype);
@@ -109,8 +112,42 @@ function rowLetter(row) {
     }
 }
 
+function letterToRow(rowLetter) {
+    switch (rowLetter) {
+        case "a":
+            return 0;
+        case "b":
+            return 1;
+        case "c":
+            return 2;
+        case "d":
+            return 3;
+        case "e":
+            return 4;
+        case "f":
+            return 5;
+        case "g":
+            return 6;
+        case "h":
+            return 7;
+        default:
+            return -1;
+    }
+}
+
 function translateCoordinates(row, column) {
-    return (rowLetter(row) + (column + 1).toString()).toString();
+    return rowLetter(row) + (column + 1).toString();
+}
+
+function translateDivID(id) {
+    let rowLetter = id.charAt(0);
+    let column = Number(id.charAt(1) - 1);
+    let row = letterToRow(rowLetter);
+    position = {
+        row: row,
+        column: column 
+    }
+    return position;
 }
 
 function pieceConquered(piece){
@@ -152,75 +189,79 @@ function Board(color) {
         }
     };
 
-    this.getPiece = function(x, y) {
-        return this.board[y][x];
+    this.getPiece = function(position) {
+        return this.board[position.column][position.row];
     }
 
     this.getPieces = function (color) {
         var pieces = [];
-        for (var row in this.board) {
-            for (var square in row) {
-                if ((square != null && square.color === color) || (square != null && color === "ALL")) {
-                    pieces.push(square);
+        let i = 0;
+        let j;
+        for(i; i<=7; i++) {
+            for(j = 0; j<=7; j++) {
+                let position = {
+                    row: i,
+                    column: j
+                }
+                if(this.getPiece(position) instanceof Piece && this.getPiece(position).color === color && !(this.getPiece(position) instanceof King)){
+                    pieces.push(this.getPiece(position));
                 }
             }
         }
         return pieces;
     };
 
-    this.move = function (rowFrom, columnFrom, rowTo, columnTo) {
-        if (this.checkValidity(rowFrom, columnFrom, rowTo, columnTo)) {
-            let posTo = this.getPiece(rowTo,columnTo);
-            console.log(posTo instanceof Piece);
+    this.move = function (from, to) {
+        if (this.checkValidity(from, to, true)) {
+            let posTo = this.getPiece(to);
             if(posTo instanceof Piece) {
-                this.board[columnTo][rowTo] = null;
+                this.board[to.column][to.row] = null;
             }
             
-            this.board[columnTo][rowTo] = this.getPiece(rowFrom,columnFrom);
-            this.board[columnFrom][rowFrom] = null;
+            this.board[to.column][to.row] = this.getPiece(from);
+            this.board[from.column][from.row] = null;
             
-            console.log(posTo instanceof Piece);
-            this.drawMove(rowFrom, columnFrom, rowTo, columnTo, posTo);
+            this.drawMove(from, to, posTo);
         } else {
             alert("Invalid move!");
         }
     };
 
-    this.drawMove = function (rowFrom, columnFrom, rowTo, columnTo, posTo) {
-        let divIDFrom = translateCoordinates(rowFrom, columnFrom);
+    this.drawMove = function (from, to, posTo) {
+        let divIDFrom = translateCoordinates(from.row, from.column);
         let $image = $("#" + divIDFrom + " img:last-child").get();
         $("#" + divIDFrom + " img:last-child").remove();
-        let divIDTo = translateCoordinates(rowTo, columnTo);
-
+        let divIDTo = translateCoordinates(to.row, to.column);
+        console.log(posTo);
         if(posTo instanceof Piece) {
+            
             $("#" + divIDTo + " img:last-child").remove();
             pieceConquered(posTo);
         }
         $("#" + divIDTo).append($image);
     };
 
-    this.checkValidity = function (rowFrom, columnFrom, rowTo, columnTo) {
+    this.checkValidity = function (from, to, real) {
+        let rowFrom = from.row;
+        let columnFrom = from.column;
+        let rowTo = to.row;
+        let columnTo = to.column;
+
         //try to move to the same position.
         if (rowFrom === rowTo && columnFrom === columnTo) {
+            console.log("trying to move to the same position");
             return false;
         }
-        
-        let piece = this.getPiece(rowFrom, columnFrom);
+
+        let piece = this.getPiece(from);
+
         //this is actually a piece.
         if(piece !== null) {
             //try to move on top of friendly piece.
-            let posTo = this.getPiece(rowTo, columnTo);
-            if(posTo instanceof Piece && posTo.color === piece.color) {
+            let posTo = this.getPiece(to);
+            if(posTo instanceof Piece && posTo.color === piece.color && real) {
+                console.log("trying to move ontop of friendly piece");
                 return false;
-            }
-
-            //special case of a knight:
-            if(piece instanceof Knight) {
-                let horJump = Math.abs(rowFrom - rowTo);
-                let verJump = Math.abs(columnFrom - columnTo);
-                if((horJump === 2 && verJump === 1) || (horJump === 1 && verJump === 2)) {
-                    return true;
-                }
             }
 
             let rpath = rowTo - rowFrom;
@@ -234,37 +275,71 @@ function Board(color) {
                 yvec= cpath/Math.abs(cpath);
             }
 
+            //special case of a knight:
+            if(piece instanceof Knight) {
+                let horJump = Math.abs(rpath);
+                let verJump = Math.abs(cpath);
+                if((horJump === 2 && verJump === 1) || (horJump === 1 && verJump === 2)) {
+                    return true;
+                }
+            }
+
             //special case of a MovesPiece:
             if(piece instanceof MovesPiece) {
                 //moved pawn or king cannot do more than one step:
                 if((piece.getMoved() || piece instanceof King) && (cpath > 1 || rpath > 1)) {
+                    console.log("trying to move too far");
                     return false;
+                }
+                //a king cannot move to a position where it would be checked.
+                if(piece instanceof King && real) {
+                    console.log(piece);
+                    if(this.isPositionChecked(to, piece.color)) {
+                       console.log("king cannot move to a position where it would be checked");
+                        return false;
+                    }
                 }
                 //unmoved pawn cannot do more than 2 steps:
                 if(!piece.getMoved() && piece instanceof Pawn && cpath > 2) {
+                    console.log("pawn cant move more than two steps");
                     return false; 
                 }
             }
 
+            //a move cannot be made if this would result in our king being checked.
+           //  if(!(piece instanceof King) && this.kingIsCheckedAfterMove(from, to, piece) && real) {
+             //    console.log("If this piece moves, the king would be checked");
+               //  return false;
+            // }
+
             //There are no pieces in the way.
-            if(this.isPathClear(rowFrom, columnFrom, rpath, cpath, xvec, yvec)) {
+            if(this.isPathClear(from, rpath, cpath, xvec, yvec)) {
                 //move is diagonal and piece can move diagonally.
                 if(Math.abs(rpath) === Math.abs(cpath)) {
                     //piece is allowed to move diagonally.
                     if(piece.moves.diag === 1) {
-                        if(piece instanceof MovesPiece && !piece.getMoved()) {
+                        if(piece instanceof MovesPiece && !piece.getMoved() && real) {
                             piece.isMoved();
                         }
                         return true;
                     }
                     //piece is a pawn that will take an opponents piece.
-                    if(piece instanceof Pawn && posTo instanceof Piece && posTo.color !== piece.color && cpath === 1) {
-                        if(!piece.getMoved()) {
-                            piece.isMoved();
+                    if(piece instanceof Pawn && Math.abs(cpath) === 1) {
+                        console.log("pawn diagonal");
+                        if(posTo instanceof Piece && posTo.color !== piece.color && real) {
+                            console.log("pawn can take!");
+                            if(!piece.getMoved()) {
+                                piece.isMoved();
+                            }
+                            return true
                         }
-                        return true
+                        if(!real) {
+                            console.log("pawn faking a move");
+                            return true;
+                        }
                     }
-                } 
+                }
+                
                 //move is vertical and piece can move vertically.
                 if(rpath === 0 && piece.moves.ver === 1) {
                     //special case for pawns:
@@ -274,14 +349,14 @@ function Board(color) {
                             return false;
                         }
                     }
-                    if(piece instanceof MovesPiece && !piece.getMoved()) {
+                    if(piece instanceof MovesPiece && !piece.getMoved() && real) {
                         piece.isMoved();
                     }
                    return true;
                 }
                 //move is horizontal and piece can move horizontally.
                 if(cpath === 0 && piece.moves.hor === 1) {
-                    if(piece instanceof MovesPiece && !piece.getMoved()) {
+                    if(piece instanceof MovesPiece && !piece.getMoved() && real) {
                         piece.isMoved();
                     }
                     return true;
@@ -291,18 +366,70 @@ function Board(color) {
         return false;
     };
 
-    this.isPathClear = function(rowFrom, columnFrom, rpath, cpath, xvec, yvec) {
+    this.isPathClear = function(from, rpath, cpath, xvec, yvec) {
         let i = 1;
         let j = 1;
 
         while(i*xvec !== rpath || j*yvec !== cpath) {
-            if(this.board[columnFrom + j*yvec][rowFrom + i*xvec] !== null) {
+            if(this.board[from.column + j*yvec][from.row + i*xvec] !== null) {
                 return false;
             }
             i++;
             j++;
         }
         return true;
+    };
+
+    this.isPositionChecked = function(to) {
+       // console.log("reached!");
+        //console.log(this.getPiece(kingpos).color === "W")
+        let checked = false;
+        if(this.playerColor === "W") {
+            console.log("black");
+            let blackPieces = this.getPieces("B");
+            blackPieces.forEach(p => {
+                let from = p.position;
+                console.log(p);
+                if(this.checkValidity(from, to, false)) {
+                    console.log("checked!");
+                    checked = true;
+                }
+            });
+        } else {
+            let whitePieces = this.getPieces("W");
+            console.log("white");
+            whitePieces.forEach(p => {
+                let from = p.position;
+                console.log(p);
+                if(this.checkValidity(from, to, false)) {
+                    console.log("checked!");
+                    checked = true;
+                }
+            });
+        }
+        return checked;
+    };
+
+    this.kingIsCheckedAfterMove = function(from, to, piece) {
+        //console.log(this.playerColor);
+        //console.log(piece.color);
+        let kingPos = this.getKing(piece.color).position;
+        let checked = false;
+
+        //fake the move.
+        this.board[to.column][to.row] = piece;
+        this.board[from.column][from.row] = null;
+
+        //check if the king would be checked by this move.
+        if(this.isPositionChecked(kingPos, piece.color)){
+            checked = true;
+        }
+
+        //undo the faked move.
+        this.board[from.column][from.row] = piece;
+        this.board[to.column][to.row] = null;
+
+        return checked;
     };
 
     this.getAllPossibleMoves = function (from, gs) {
@@ -346,25 +473,33 @@ function Board(color) {
 
     this.drawBoard = function () {
         this.setBoardCoordinates();
-        let i = 1;
-        for (i; i <= 16; i++) {
-            let row = Math.floor((i - 1) / 8);
-            let column = (i - 1) % 8;
-            let piece = this.board[row][column];
-            let image = piece.constructor.name;
-            let $img = document.createElement("img");
-            $img.src = "../images/B" + image + ".png";
-            $("#" + translateCoordinates(piece.position.row, piece.position.column)).prepend($img);
+        let i = 0;
+        let j;
+        for (i; i <= 1; i++) {
+            for(j = 0; j<=7; j++) {
+                let row = i
+                let column = j
+                let piece = this.board[row][column];
+                let image = piece.constructor.name;
+                let $img = document.createElement("img");
+                $img.src = "../images/B" + image + ".png";
+                // console.log(piece.position.row);
+                // console.log(piece.position.column);
+                $("#" + translateCoordinates(piece.position.row, piece.position.column)).prepend($img);
+            }
         }
-        i = 49;
-        for (i; i <= 64; i++) {
-            let row = Math.floor((i - 1) / 8);
-            let column = (i - 1) % 8;
-            let piece = this.board[row][column];
-            let image = piece.constructor.name;
-            let $img = document.createElement("img");
-            $img.src = "../images/W" + image + ".png";
-            $("#" + translateCoordinates(piece.position.row, piece.position.column)).prepend($img);
+        for (i = 6; i <= 7; i++) {
+            for(j = 0; j <= 7; j++){
+                let row = i;
+                let column = j;
+                let piece = this.board[row][column];
+                let image = piece.constructor.name;
+                let $img = document.createElement("img");
+                $img.src = "../images/W" + image + ".png";
+                // console.log(piece.position.row);
+                // console.log(piece.position.column);
+                $("#" + translateCoordinates(piece.position.row, piece.position.column)).prepend($img);
+            }
         }
     };
 }

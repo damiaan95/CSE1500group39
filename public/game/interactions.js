@@ -35,16 +35,16 @@
 
         $("#board div").bind("click", function (event) {
             if (clicked == null) {
-                console.log("1 click");
-                clicked = $(event.target);
-                console.log(clicked);
+               // console.log("1 click");
+                clicked = $(event.target).attr('id');
+               // console.log(clicked);
             } else {
-                console.log("2 click");
-                let to = $(event.target);
-                console.log(to);
-                gameStateObj.getBoard().move(
-                    Number(clicked.attr("row")), Number(clicked.attr("column")),
-                    Number(to.attr("row")), Number(to.attr("column")));
+               // console.log("2 click");
+                let toID = $(event.target).attr('id');
+               // console.log(toID);
+                let from = translateDivID(clicked);
+                let to = translateDivID(toID);
+                gameStateObj.getBoard().move(from, to);
                 clicked = null;
             }
         });

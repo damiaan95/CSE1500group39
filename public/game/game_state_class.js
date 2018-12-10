@@ -47,24 +47,7 @@ function GameState(socket) {
         let king = this.board.getKing(this.playerColor);
         let kingPos = king.getPosition();
 
-        if(this.playerColor === "W") {
-            let blackPieces = this.board.getPieces("B");
-            blackPieces.forEach(piece => {
-                let pos = piece.getPosition();
-                if(this.board.checkValidity(pos, kingPos, this)) {
-                    return true;
-                }
-            });
-        } else {
-            let blackPieces = this.board.getPieces("W");
-            blackPieces.forEach(piece => {
-                let pos = piece.getPosition();
-                if(this.board.checkValidity(pos, kingPos, this)) {
-                    return true;
-                }
-            });
-        }
-        return false;
+        return this.board.isPositionChecked(kingPos);
     };
 
     this.isOpponentCheckmate = function() {
@@ -93,4 +76,4 @@ function GameState(socket) {
             this.turn = false;
         }
     };
-}
+};
