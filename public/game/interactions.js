@@ -1,5 +1,6 @@
 //client side
 (function setup() {
+    var move = new Audio("../sound-effects/Move.mp3");
     var socket = new WebSocket("ws://localhost:3000");
 
     /*
@@ -17,7 +18,7 @@
     socket.onmessage = function (event) {
 
         let incomingMessage = JSON.parse(event.data);
-        let clicked = null;
+        let $clicked = null;
 
         if (incomingMessage.type === Messages.T_PLAYER_B) {
             gameStateObj.setPlayerColor("B");
@@ -34,18 +35,32 @@
         }
 
         $("#board div").bind("click", function (event) {
-            if (clicked == null) {
-               // console.log("1 click");
-                clicked = $(event.target).attr('id');
-               // console.log(clicked);
+            if ($clicked === null) {
+                console.log("1 click");
+                $clicked = $(event.target);
+                clickedID = $clicked.attr('id');
+                
+                if ($clicked.children().length > 0) {
+                    $clicked.addClass("Clicked");
+                    console.log($clicked);
+                } else {
+                    $clicked = null;
+                }
             } else {
-               // console.log("2 click");
-                let toID = $(event.target).attr('id');
-               // console.log(toID);
-                let from = translateDivID(clicked);
-                let to = translateDivID(toID);
-                gameStateObj.getBoard().move(from, to);
-                clicked = null;
+                if (clickedID === $(event.target).attr("id")) {
+                    $clicked.removeClass();
+                    $clicked = null;
+                } else {
+                    console.log("2 click");
+                    move.play();
+                    let toID = $(event.target).attr('id');
+                    // console.log(toID);
+                     let from = translateDivID(clickedID);
+                     let to = translateDivID(toID);
+                     gameStateObj.getBoard().move(from, to);
+                     $clicked.removeClass();
+                     $clicked = null;
+                }
             }
         });
 

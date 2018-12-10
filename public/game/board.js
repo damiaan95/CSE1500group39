@@ -73,7 +73,7 @@ function Bishop(color, column, row) {
 }
 
 Bishop.prototype = Object.create(Piece.prototype);
-Bishop.prototype.constructor = Knight;
+Bishop.prototype.constructor = Bishop;
 
 function Queen(color, column, row) {
     Piece.call(this, color, column, row, "Queen");
@@ -307,7 +307,7 @@ function Board(color) {
             }
 
             //a move cannot be made if this would result in our king being checked.
-           //  if(!(piece instanceof King) && this.kingIsCheckedAfterMove(from, to, piece) && real) {
+           // if(!(piece instanceof King) && this.kingIsCheckedAfterMove(from, to, piece) && real) {
              //    console.log("If this piece moves, the king would be checked");
                //  return false;
             // }
@@ -461,9 +461,9 @@ function Board(color) {
                 $tile.setAttribute("column", column);
                 $("#board").append($tile);
                 if ((i + temp) % 2 === 0) {
-                    $("#board div:nth-child(" + ((i) * 8 + temp + 1) + ")").addClass("Color1");
+                    $tile.setAttribute("color", "Color1");
                 } else {
-                    $("#board div:nth-child(" + ((i) * 8 + temp + 1) + ")").addClass("Color2");
+                    $tile.setAttribute("color", "Color2");
                 }
                 temp++;
             }
@@ -481,10 +481,11 @@ function Board(color) {
                 let column = j
                 let piece = this.board[row][column];
                 let image = piece.constructor.name;
+                console.log(piece.constructor.name);
                 let $img = document.createElement("img");
                 $img.src = "../images/B" + image + ".png";
-                // console.log(piece.position.row);
-                // console.log(piece.position.column);
+                //console.log(piece.position.row);
+                //console.log(piece);
                 $("#" + translateCoordinates(piece.position.row, piece.position.column)).prepend($img);
             }
         }

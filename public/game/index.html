@@ -2,31 +2,33 @@
 <html>
 <head>
     <title>Chess Game</title>
-    <link href="style.css" rel="stylesheet" type="text/css">
-
+    <link href="../stylesheets/style.css" rel="stylesheet" type="text/css">
+    <link href="../stylesheets/game.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <main>
 
     <section id="game">
         <section id="lost_pieces" class="pieces displayed">
-
+            &nbsp;
         </section>
 
         <section id="board">
-
         </section>
         <section id="conquered_pieces" class="pieces displayed">
-
+            &nbsp;
         </section>
     </section>
 
-    <section id="moves">
 
+    <section id="moves">
+            <p>Waiting for next move<span id="one_dot">.</span><span id="two_dots">.</span><span id="three_dots">.</span></p>
     </section>
     <section id="buttons">
         <button id="forfeit">forfeit</button>
     </section>
+
+
 </main>
 <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
 <script src="messages.js"></script>
