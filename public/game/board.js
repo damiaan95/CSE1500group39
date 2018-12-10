@@ -4,12 +4,12 @@ function Piece(color, row, column, type) {
     this.position = {
         row: row,
         column: column
-    }
+    };
     this.moves = {
         hor: 1,
         ver: 1,
         diag: 1
-    }
+    };
 }
 
 Piece.prototype.getPosition = function () {
@@ -46,7 +46,7 @@ function Rook(color, column, row) {
     Piece.call(this, color, column, row, "Rook");
     this.moves = {
         hor: 1,
-        ver: 1,
+        ver: 1
     }
 }
 
