@@ -209,6 +209,9 @@ function Board(color, gameState) {
                 };
                 if (this.getPiece(position) instanceof Piece && this.getPiece(position).color === color && !(this.getPiece(position) instanceof King)) {
                     pieces.push(this.getPiece(position));
+                    console.log("piece added to checklist ");
+                    console.log(pieces);
+                    console.log("colour of checklist " + color);
                 }
             }
         }
@@ -259,12 +262,6 @@ function Board(color, gameState) {
         let rowTo = to.row;
         let columnTo = to.column;
 
-        //try to move to the same position.
-        if (rowFrom === rowTo && columnFrom === columnTo) {
-            console.log("trying to move to the same position");
-            return false;
-        }
-
         let piece = this.getPiece(from);
 
         //this is actually a piece.
@@ -272,7 +269,7 @@ function Board(color, gameState) {
             //try to move on top of friendly piece.
             let posTo = this.getPiece(to);
             if (posTo instanceof Piece && posTo.color === piece.color && real) {
-                console.log("trying to move ontop of friendly piece");
+                console.log("trying to move on top of friendly piece");
                 return false;
             }
 
@@ -319,10 +316,10 @@ function Board(color, gameState) {
             }
 
             //a move cannot be made if this would result in our king being checked.
-            // if(!(piece instanceof King) && this.kingIsCheckedAfterMove(from, to, piece) && real) {
-            //    console.log("If this piece moves, the king would be checked");
-            //  return false;
-            // }
+            if(!(piece instanceof King) && real && this.kingIsCheckedAfterMove(from, to, piece)) {
+               console.log("If this piece moves, the king would be checked");
+             return false;
+            }
 
             //There are no pieces in the way.
             if (this.isPathClear(from, rpath, cpath, xvec, yvec)) {
@@ -442,7 +439,7 @@ function Board(color, gameState) {
         this.board[from.column][from.row] = null;
 
         //check if the king would be checked by this move.
-        if (this.isPositionChecked(kingPos, piece.color)) {
+        if (this.isPositionChecked(kingPos)) {
             checked = true;
         }
 

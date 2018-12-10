@@ -52,11 +52,14 @@
                     $clicked = $(event.target);
                     clickedID = $clicked.attr('id');
                     
-                    if ($clicked.children().length > 0) {
-                        $clicked.addClass("Clicked");
-                       // console.log($clicked);
-                    } else {
+                    if ((!($clicked.children().length > 0))) {
                         $clicked = null;
+                        // console.log($clicked);
+                    } else if (gameStateObj.getBoard().getPiece(translateDivID(clickedID)).color !== gameStateObj.board.opponentColor) {
+                        $clicked = null;
+                    }else{
+                        $clicked.addClass("Clicked");
+
                     }
                 } else {
                     if (clickedID === $(event.target).attr("id")) {

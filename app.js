@@ -72,7 +72,7 @@ wss.on("connection", function connection(ws) {
         
         if (gameObj.hasTwoConnectedPlayers()) {
             if (mess.type === messages.T_MAKE_A_MOVE) {
-                if(mess.data.taken.type === "Queen"){
+                if(mess.data.taken !== null && mess.data.taken.type === "Queen"){
                     gameStatus.queensConquered++;
                 }
                 if (isPlayerW) {
