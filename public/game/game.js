@@ -14,23 +14,11 @@ var main = function () {
         document.getElementById("board").webkitRequestFullscreen();
     });
 
-    function pieceLost(piece, turn){
+    function pieceLost(piece){
         var $image = document.createElement('img');
-        $image.src="../images/" + piece;
-        if(turn){
-            $("#conquered_pieces").append($image);
-        }else {
-            $("#lost_pieces").append($image);
-        }
-    }
-
-    function pieceConquered(piece){
-
-    }
-
-
-
-
+        $image.src="../images/" + piece.color + piece.type + ".png";
+        $("#lost_pieces").append($image);
+    };
 };
 
 $(document).ready(main);

@@ -18,7 +18,7 @@
     socket.onmessage = function (event) {
 
         let incomingMessage = JSON.parse(event.data);
-        let clicked = null;
+        let $clicked = null;
 
         if (incomingMessage.type === Messages.T_PLAYER_B) {
             gameStateObj.setPlayerColor("B");
@@ -35,29 +35,31 @@
         }
 
         $("#board div").bind("click", function (event) {
-            if (clicked === null) {
+            if ($clicked === null) {
                 console.log("1 click");
-                clicked = $(event.target);
-                if (clicked.children().length > 0) {
-                    clicked.addClass("Clicked")
-                    console.log(clicked);
+                $clicked = $(event.target);
+                clickedID = $clicked.attr('id');
+                
+                if ($clicked.children().length > 0) {
+                    $clicked.addClass("Clicked");
+                    console.log($clicked);
                 } else {
-                    clicked = null;
+                    $clicked = null;
                 }
             } else {
-                if ((clicked.attr("row") === $(event.target).attr("row")) && (clicked.attr("column") === $(event.target).attr("column"))) {
-                    clicked.removeClass();
-                    clicked = null;
+                if (clickedID === $(event.target).attr("id")) {
+                    $clicked.removeClass();
+                    $clicked = null;
                 } else {
                     console.log("2 click");
                     move.play();
-                    let to = $(event.target);
-                    console.log(to);
-                    gameStateObj.getBoard().move(
-                        Number(clicked.attr("row")), Number(clicked.attr("column")),
-                        Number(to.attr("row")), Number(to.attr("column")));
-                    clicked.removeClass();
-                    clicked = null;
+                    let toID = $(event.target).attr('id');
+                    // console.log(toID);
+                     let from = translateDivID(clickedID);
+                     let to = translateDivID(toID);
+                     gameStateObj.getBoard().move(from, to);
+                     $clicked.removeClass();
+                     $clicked = null;
                 }
             }
         });
