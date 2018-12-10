@@ -41,38 +41,38 @@ function GameState(socket) {
     this.opponentIsChecked = function() {
         return this.checked.opponent;
     };
+    
+    this.isPlayerChecked = function(color) {
 
-    this.isPlayerChecked = function() {
-
-        let king = this.board.getKing(this.playerColor);
-        let kingPos = king.getPosition();
+        let king = this.board.getKing(color);
+        let kingPos = king.color;
 
         return this.board.isPositionChecked(kingPos);
     };
 
     this.isOpponentCheckmate = function() {
-        let kingMoves;
-        if(this.playerColor === "W") {
-            kingMoves = this.board.getAllPossibleMoves(this.board.getKing("B").getPosition(), this);
-        }  else {
-            kingMoves = this.board.getAllPossibleMoves(this.board.getKing("W").getPosition(), this);
-        }
-        return (kingMoves.length === 0 && this.checked.opponent);
+        return false;
+        let kingMoves = this.board.getAllPossibleMoves(this.board.getKing(this.board.opponentColor).position);
+        return (kingMoves.length === 0 && this.isPlayerChecked(this.board.opponentColor));
     };
 
-    this.updateGameState = function(piece, to) {
-
-        this.board.move(piece.position, to);
-
+    this.updateGameState = function(from, to, taken, myTurn) {
+        if(myTurn) {
+            this.board.moveFromOpponent(from, to, taken);
+            this.turn = true;
+            //this.checked.thisPlayer = this.isPlayerChecked();
+        } else 
         if(this.isOpponentCheckmate()) {
             socket.send(Messages.S_GAME_WON);
+            console.log("WON!!!!!!!!!");
             socket.close();
-        }
-
-        if(!this.turn) {
-            this.turn = true;
-            this.checked = this.isPlayerChecked();
         } else {
+            let message = Messages.O_MAKE_A_MOVE;
+            message.data.from = from;
+            message.data.to = to;
+            message.data.taken = taken;
+            mess = JSON.stringify(message); 
+            socket.send(mess);
             this.turn = false;
         }
     };
