@@ -35,30 +35,30 @@
         }
 
         $("#board div").bind("click", function (event) {
-            if (clicked == null) {
-                if (clicked === $(event.target)) {
+            if (clicked === null) {
+                console.log("1 click");
+                clicked = $(event.target);
+                if (clicked.children().length > 0) {
+                    clicked.addClass("Clicked")
+                    console.log(clicked);
+                } else {
+                    clicked = null;
+                }
+            } else {
+                if ((clicked.attr("row") === $(event.target).attr("row")) && (clicked.attr("column") === $(event.target).attr("column"))) {
                     clicked.removeClass();
                     clicked = null;
                 } else {
-                    console.log("1 click");
-                    clicked = $(event.target);
-                    if(clicked.children().length > 0){
-                        clicked.addClass("Clicked")
-                        console.log(clicked);
-                    }else{
-                        clicked = null;
-                    }
+                    console.log("2 click");
+                    move.play();
+                    let to = $(event.target);
+                    console.log(to);
+                    gameStateObj.getBoard().move(
+                        Number(clicked.attr("row")), Number(clicked.attr("column")),
+                        Number(to.attr("row")), Number(to.attr("column")));
+                    clicked.removeClass();
+                    clicked = null;
                 }
-            } else {
-                console.log("2 click");
-                move.play();
-                let to = $(event.target);
-                console.log(to);
-                gameStateObj.getBoard().move(
-                    Number(clicked.attr("row")), Number(clicked.attr("column")),
-                    Number(to.attr("row")), Number(to.attr("column")));
-                clicked.removeClass();
-                clicked = null;
             }
         });
 

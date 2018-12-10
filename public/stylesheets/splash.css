@@ -6,6 +6,11 @@
     }
 }
 
+main {
+    position: fixed;
+    margin-left: 175px;
+}
+
 h1{
     padding-top: 50px;
     padding-left: 50px;

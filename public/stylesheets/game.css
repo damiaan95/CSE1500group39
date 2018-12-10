@@ -3,6 +3,8 @@ button {
     background: darkblue;
     border-color: darkblue;
     padding: 18px 107px;
+    position: relative;
+    left: 150px;
 }
 
 button:active{
@@ -31,11 +33,15 @@ button:hover::before{
 #board {
     width: 600px;
     height: 600px;
-    position:absolute;
+    position:fixed;
+    bottom: 75px;
+    left: 200px;
+
 }
 
-/*#board:-webkit-full-screen{*/
-/*}*/
+#board:-webkit-full-screen{
+    background: #feffea;
+}
 
 
 
@@ -67,6 +73,8 @@ button:hover::before{
     float: left;
     margin: 95px 75px 20px 0;
     overflow-y: scroll;
+    position: relative;
+    left: 150px;
 }
 
 #moves p {

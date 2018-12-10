@@ -11,7 +11,7 @@ var main = function () {
         moveMade("key", "pressed");
         pieceLost("Logo chess game.png", true);
         pieceLost("Logo chess game.png", false);
-        // document.getElementById("board").webkitRequestFullscreen();
+        document.getElementById("board").webkitRequestFullscreen();
     });
 
     function pieceLost(piece, turn){
