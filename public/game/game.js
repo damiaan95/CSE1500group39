@@ -7,11 +7,11 @@ var main = function () {
         $("#moves").prepend($move);
     }
 
-    $("#buttons button").on("click", function (event) {
-        access();
-        moveMade("key", "pressed");
-        // document.getElementById("board").webkitRequestFullscreen();
-    });
+    // $("#buttons button").on("click", function (event) {
+    //     access();
+    //     moveMade("key", "pressed");
+    //     // document.getElementById("board").webkitRequestFullscreen();
+    // });
 };
 
 var access = function() {

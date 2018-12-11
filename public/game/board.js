@@ -366,7 +366,6 @@ function Board(color, gameState) {
            // console.log("This position is not in the board");
             return null;
         }
-        console.log(position.row + ", " + position.column);
         return this.board[position.row][position.column];
     };
 
