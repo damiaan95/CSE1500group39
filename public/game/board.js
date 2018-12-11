@@ -363,8 +363,10 @@ function Board(color, gameState) {
 
     this.getPiece = function (position) {
         if (!this.inBoard(position)) {
+           // console.log("This position is not in the board");
             return null;
         }
+        console.log(position.row + ", " + position.column);
         return this.board[position.row][position.column];
     };
 
@@ -408,7 +410,7 @@ function Board(color, gameState) {
             if(posTo instanceof Piece) {
                 this.pieceConquered(posTo);
             }
-            this.drawMove(from, to, posTo);
+            this.drawMove(from, to, posTo, this.playerColor);
             gameState.updateGameState(from, to, posTo, false);
         } else {
             console.log("invalid move");
@@ -427,13 +429,13 @@ function Board(color, gameState) {
         if(posTo !== null) {
             this.pieceLost(posTo);
         }
-        this.drawMove(from, to, posTo);
+        this.drawMove(from, to, posTo, this.opponentColor);
         if (this.getMyKing().checkMate(this)) {
             alert("CHECK-MATE!!!!");
         }
     };
 
-    this.drawMove = function (from, to, posTo) {
+    this.drawMove = function (from, to, posTo, color) {
         let divIDFrom = this.coordinatesToDivID(from.row, from.column, this.playerColor);
         let $image = $("#" + divIDFrom + " img:last-child").get();
         $("#" + divIDFrom + " img:last-child").remove();
@@ -443,6 +445,13 @@ function Board(color, gameState) {
             $("#" + divIDTo + " img:last-child").remove();
         }
         $("#" + divIDTo).append($image);
+
+        let $im = document.createElement('img');
+        console.log($image);
+        $im.src = $image["0"].currentSrc;
+        let $movesString = $("<p>").text(divIDFrom + " --> " + divIDTo);
+        $movesString.prepend($im);
+        $("#moves").append($movesString);
     };
 
     this.checkValidity = function (from, to) {

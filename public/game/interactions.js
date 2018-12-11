@@ -50,13 +50,15 @@
                 if ($clicked === null) {
                     // console.log("1 click");
                     $clicked = $(event.target);
-
+                    //console.log(gameStateObj.getPlayerColor());
                     let clickMatrixPos = gameStateObj.board.divIdToCoordinates(
                         $clicked.attr("id"), "W");
 
                     let oppColor = gameStateObj.board.opponentColor;
                     let clickedPiece = gameStateObj.getBoard().getPiece(clickMatrixPos);
+                    console.log(clickedPiece);
                     if (clickedPiece == null) {
+                        console.log("There is no piece here!");
                         return;
                     }
 
