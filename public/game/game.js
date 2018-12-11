@@ -7,20 +7,11 @@ var main = function () {
         $("#moves").prepend($move);
     }
 
-    $("#buttons button").on("click", function (event) {
-        access();
-        moveMade("key", "pressed");
-        // document.getElementById("board").webkitRequestFullscreen();
-    });
-
-    function pieceLost(piece) {
-        var $image = document.createElement('img');
-        $image.src = "../images/" + piece.color + piece.type + ".png";
-        $("#lost_pieces").append($image);
-    }
-
-
-
+    // $("#buttons button").on("click", function (event) {
+    //     access();
+    //     moveMade("key", "pressed");
+    //     // document.getElementById("board").webkitRequestFullscreen();
+    // });
 };
 
 var access = function() {

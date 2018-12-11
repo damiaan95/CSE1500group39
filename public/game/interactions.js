@@ -20,7 +20,7 @@
         let incomingMessage = JSON.parse(event.data);
         let $clicked = null;
 
-        if(incomingMessage.type === "START-GAME") {
+        if (incomingMessage.type === "START-GAME") {
             gameStateObj.setTurn();
         }
 
@@ -46,32 +46,40 @@
         }
 
         $("#board div").bind("click", function (event) {
-            if(gameStateObj.getTurn()) {
+            if (gameStateObj.getTurn()) {
                 if ($clicked === null) {
-                    console.log("1 click");
+                    // console.log("1 click");
                     $clicked = $(event.target);
-                    clickedID = $clicked.attr('id');
-                    
+                    //console.log(gameStateObj.getPlayerColor());
+                    let clickMatrixPos = gameStateObj.board.divIdToCoordinates(
+                        $clicked.attr("id"), "W");
+
+                    let oppColor = gameStateObj.board.opponentColor;
+                    let clickedPiece = gameStateObj.getBoard().getPiece(clickMatrixPos);
+                    console.log(clickedPiece);
+                    if (clickedPiece == null) {
+                        console.log("There is no piece here!");
+                        return;
+                    }
+
+
                     if ((!($clicked.children().length > 0))) {
                         $clicked = null;
-                        // console.log($clicked);
-                    } else if (gameStateObj.getBoard().getPiece(translateDivID(clickedID)).color !== gameStateObj.board.opponentColor) {
+                    } else if (clickedPiece.color === oppColor) {
                         $clicked = null;
-                    }else{
+                    } else {
                         $clicked.addClass("Clicked");
-
                     }
                 } else {
-                    if (clickedID === $(event.target).attr("id")) {
+                    let $to = $(event.target);
+                    if ($clicked.attr("id") === $to.attr("id")) {
                         $clicked.removeClass();
                         $clicked = null;
                     } else {
-                        console.log("2 click");
+                        // console.log("2 click");
                         move.play();
-                        let toID = $(event.target).attr('id');
-                        // console.log(toID);
-                        let from = translateDivID(clickedID);
-                        let to = translateDivID(toID);
+                        let from = {row: $clicked.attr("row"), column: $clicked.attr("column")};
+                        let to = {row: $to.attr("row"), column: $to.attr("column")};
                         gameStateObj.getBoard().move(from, to);
                         $clicked.removeClass();
                         $clicked = null;
@@ -81,6 +89,7 @@
                 console.log("not your turn")
             }
         });
+        
 
 
     }
