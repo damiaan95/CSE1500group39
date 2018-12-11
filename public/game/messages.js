@@ -2,7 +2,7 @@
 
     exports.O_START_GAME = {
         type: "START-GAME"
-    }
+    };
     exports.S_START_GAME = JSON.stringify(exports.O_START_GAME);
 
     exports.T_GAME_WON = "GAME-WON";             
@@ -30,13 +30,13 @@
     exports.T_PLAYER_W = "PLAYER_W";
     exports.O_PLAYER_W = {
         type: exports.T_PLAYER_W
-    }
+    };
     exports.S_PLAYER_W = JSON.stringify(exports.O_PLAYER_W);
     
     exports.T_PLAYER_B = "PLAYER_B";
     exports.O_PLAYER_B = {
         type: exports.T_PLAYER_B
-    }
+    };
     exports.S_PLAYER_B = JSON.stringify(exports.O_PLAYER_B);
     
 })(typeof exports === "undefined" ? this.Messages = {} : exports);

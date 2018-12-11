@@ -43,25 +43,29 @@ function GameState(socket) {
     };
     
     this.isPlayerChecked = function(color) {
-
-        let king = this.board.getKing(color);
-        let kingPos = king.color;
-
-        return this.board.isPositionChecked(kingPos);
+        let king;
+        if (color === this.board.playerColor) {
+            king = this.board.getMyKing();
+        } else {
+            king = this.board.getNotMyKing();
+        }
+        return king.check(this.board);
     };
 
     this.isOpponentCheckmate = function() {
-        return false;
-        let kingMoves = this.board.getAllPossibleMoves(this.board.getKing(this.board.opponentColor).position);
-        return (kingMoves.length === 0 && this.isPlayerChecked(this.board.opponentColor));
+        // return false;
+        return this.board.getNotMyKing().check(this.board);
     };
 
     this.updateGameState = function(from, to, taken, myTurn) {
         if(myTurn) {
             this.board.moveFromOpponent(from, to, taken);
+            // if (this.board.getNotMyKing().checkMate(this.board)) {
+            //     alert("You lost...");
+            // }
             this.turn = true;
             //this.checked.thisPlayer = this.isPlayerChecked();
-        } else 
+        } else
         if(this.isOpponentCheckmate()) {
             socket.send(Messages.S_GAME_WON);
             console.log("WON!!!!!!!!!");
@@ -71,7 +75,7 @@ function GameState(socket) {
             message.data.from = from;
             message.data.to = to;
             message.data.taken = taken;
-            mess = JSON.stringify(message); 
+            let mess = JSON.stringify(message);
             socket.send(mess);
             this.turn = false;
         }

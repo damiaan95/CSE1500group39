@@ -1,6 +1,5 @@
 //client side
 (function setup() {
-    var move = new Audio("../sound-effects/Move.mp3");
     var socket = new WebSocket("ws://localhost:3000");
 
     /*
@@ -22,6 +21,7 @@
 
         if (incomingMessage.type === "START-GAME") {
             gameStateObj.setTurn();
+            document.getElementById("message").innerHTML = "Your move";
         }
 
         if (incomingMessage.type === Messages.T_PLAYER_B) {
@@ -29,13 +29,14 @@
 
             gameStateObj.setBoard(new Board("B", gameStateObj));
             gameStateObj.getBoard().drawBoard();
-
-            // .forEach(function(square){
+            document.getElementById("message").innerHTML = "Opponents move";
         }
+
         if (incomingMessage.type === Messages.T_PLAYER_W) {
             gameStateObj.setPlayerColor("W");
             gameStateObj.setBoard(new Board("W", gameStateObj));
             gameStateObj.getBoard().drawBoard();
+
         }
 
         if (incomingMessage.type === Messages.T_MAKE_A_MOVE) {
@@ -43,22 +44,20 @@
             let to = incomingMessage.data.to;
             let taken = incomingMessage.data.taken;
             gameStateObj.updateGameState(from, to, taken, true);
+            document.getElementById("message").innerHTML = "Your move";
         }
 
-        $("#board div").bind("click", function (event) {
+        $("#board div").on("mouseup", function (event) {
             if (gameStateObj.getTurn()) {
                 if ($clicked === null) {
-                    // console.log("1 click");
                     $clicked = $(event.target);
-                    //console.log(gameStateObj.getPlayerColor());
-                    let clickMatrixPos = gameStateObj.board.divIdToCoordinates(
-                        $clicked.attr("id"), "W");
 
+                    let clickMatrixPos = {row: $clicked.attr("row"), column: $clicked.attr("column")};
                     let oppColor = gameStateObj.board.opponentColor;
-                    let clickedPiece = gameStateObj.getBoard().getPiece(clickMatrixPos);
-                    console.log(clickedPiece);
+                    let clickedPiece = gameStateObj.board.getPiece(clickMatrixPos);
                     if (clickedPiece == null) {
                         console.log("There is no piece here!");
+                        $clicked = null;
                         return;
                     }
 
@@ -77,12 +76,12 @@
                         $clicked = null;
                     } else {
                         // console.log("2 click");
-                        move.play();
                         let from = {row: $clicked.attr("row"), column: $clicked.attr("column")};
                         let to = {row: $to.attr("row"), column: $to.attr("column")};
                         gameStateObj.getBoard().move(from, to);
                         $clicked.removeClass();
                         $clicked = null;
+                        document.getElementById("message").innerHTML = "Opponents move";
                     }
                 }
             } else {

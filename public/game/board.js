@@ -1,3 +1,5 @@
+var move = new Audio("../sound-effects/Move.mp3");
+
 function Piece(color, row, column, type) {
     this.color = color;
     this.type = type;
@@ -305,6 +307,7 @@ King.prototype.check = function (board) {
             allOpponentMoves = allOpponentMoves.concat(piece.getMoves(board));
         }
     });
+
     let checked = false;
     for (let i = 0; i < allOpponentMoves.length; i++) {
         if (allOpponentMoves[i].row === this.position.row
@@ -312,6 +315,7 @@ King.prototype.check = function (board) {
             checked = true;
         }
     }
+
     return checked;
 };
 
@@ -329,12 +333,11 @@ function Board(color, gameState) {
         this.opponentColor = "W";
     }
 
-    console.log(this.playerColor);
-    this.whiteKing = new King("W", 7, 4);
-    this.blackKing = new King("B", 0, 4);
-
-            this.board =
-                [
+    if (this.playerColor === "W") {
+        this.whiteKing = new King("W", 7, 4);
+        this.blackKing = new King("B", 0, 4);
+        this.board =
+            [
                 [new Rook("B", 0, 0), new Knight("B", 0, 1), new Bishop("B", 0, 2), new Queen("B", 0, 3), this.blackKing, new Bishop("B", 0, 5), new Knight("B", 0, 6), new Rook("B", 0, 7)],
                 [new Pawn("B", 1, 0), new Pawn("B", 1, 1), new Pawn("B", 1, 2), new Pawn("B", 1, 3), new Pawn("B", 1, 4), new Pawn("B", 1, 5), new Pawn("B", 1, 6), new Pawn("B", 1, 7)],
                 [null, null, null, null, null, null, null, null],
@@ -344,6 +347,22 @@ function Board(color, gameState) {
                 [new Pawn("W", 6, 0), new Pawn("W", 6, 1), new Pawn("W", 6, 2), new Pawn("W", 6, 3), new Pawn("W", 6, 4), new Pawn("W", 6, 5), new Pawn("W", 6, 6), new Pawn("W", 6, 7)],
                 [new Rook("W", 7, 0), new Knight("W", 7, 1), new Bishop("W", 7, 2), new Queen("W", 7, 3), this.whiteKing, new Bishop("W", 7, 5), new Knight("W", 7, 6), new Rook("W", 7, 7)]
             ];
+    } else {
+        this.whiteKing = new King("W", 0, 3);
+        this.blackKing = new King("B", 7, 3);
+        this.board =
+            [
+                [new Rook("W", 0, 0), new Knight("W", 0, 1), new Bishop("W", 0, 2), this.whiteKing, new Queen("W", 0, 4), new Bishop("W", 0, 5), new Knight("W", 0, 6), new Rook("W", 0, 7)],
+                [new Pawn("W", 1, 0), new Pawn("W", 1, 1), new Pawn("W", 1, 2), new Pawn("W", 1, 3), new Pawn("W", 1, 4), new Pawn("W", 1, 5), new Pawn("W", 1, 6), new Pawn("W", 1, 7)],
+                [null, null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null, null],
+                [new Pawn("B", 6, 0), new Pawn("B", 6, 1), new Pawn("B", 6, 2), new Pawn("B", 6, 3), new Pawn("B", 6, 4), new Pawn("B", 6, 5), new Pawn("B", 6, 6), new Pawn("B", 6, 7)],
+                [new Rook("B", 7, 0), new Knight("B", 7, 1), new Bishop("B", 7, 2), this.blackKing, new Queen("B", 7, 4), new Bishop("B", 7, 5), new Knight("B", 7, 6), new Rook("B", 7, 7)]
+            ];
+    }
+
 
     this.getMyKing = function () {
         if (this.playerColor === "W") {
@@ -363,7 +382,6 @@ function Board(color, gameState) {
 
     this.getPiece = function (position) {
         if (!this.inBoard(position)) {
-           // console.log("This position is not in the board");
             return null;
         }
         return this.board[position.row][position.column];
@@ -406,6 +424,7 @@ function Board(color, gameState) {
                 alert("Can't do this move, since it results in being checked");
                 return;
             }
+            move.play();
             if(posTo instanceof Piece) {
                 this.pieceConquered(posTo);
             }
@@ -416,22 +435,20 @@ function Board(color, gameState) {
         }
     };
 
-    this.moveFromOpponent = function (from, to, posTo) {
-        from = this.translateOfColor(from.row, from.column);
-        to = this.translateOfColor(to.row, to.column);
+    this.moveFromOpponent = function (opponentFrom, opponentTo, posTo) {
+        let from = this.translateOfColor(opponentFrom.row, opponentFrom.column);
+        let to = this.translateOfColor(opponentTo.row, opponentTo.column);
 
         let movedPiece = this.getPiece(from);
         this.board[to.row][to.column] = movedPiece;
         this.board[from.row][from.column] = null;
         movedPiece.position.column = Number(to.column);
         movedPiece.position.row = Number(to.row);
+
         if(posTo !== null) {
             this.pieceLost(posTo);
         }
         this.drawMove(from, to, posTo, this.opponentColor);
-        if (this.getMyKing().checkMate(this)) {
-            alert("CHECK-MATE!!!!");
-        }
     };
 
     this.drawMove = function (from, to, posTo, color) {
@@ -446,9 +463,8 @@ function Board(color, gameState) {
         $("#" + divIDTo).append($image);
 
         let $im = document.createElement('img');
-        console.log($image);
         $im.src = $image["0"].currentSrc;
-        let $movesString = $("<p>").text(divIDFrom + " --> " + divIDTo);
+        let $movesString = $("<p>").text(divIDFrom + " to " + divIDTo);
         $movesString.prepend($im);
         $("#moves").append($movesString);
     };
@@ -495,6 +511,7 @@ function Board(color, gameState) {
         }
     };
     this.drawBoard = function () {
+        access();
         this.setViewBoard();
         let column, row;
         for (row = 0; row <= 1; row++) {
@@ -502,8 +519,8 @@ function Board(color, gameState) {
                 let piece = this.board[row][column];
                 let image = piece.constructor.name;
                 let img = document.createElement('img');
-                img.src = "../images/" + piece.color + image + ".png";
-                $("#" + this.coordinatesToDivID(piece.position.row, piece.position.column, "W")).prepend(img);
+                img.src = "../images/" + this.opponentColor + image + ".png";
+                $("#" + this.coordinatesToDivID(piece.position.row, piece.position.column, this.playerColor)).prepend(img);
             }
         }
         for (row = 6; row <= 7; row++) {
@@ -511,8 +528,8 @@ function Board(color, gameState) {
                 let piece = this.board[row][column];
                 let image = piece.constructor.name;
                 let img = document.createElement("img");
-                img.src = "../images/" + piece.color + image + ".png";
-                let divId = this.coordinatesToDivID(piece.position.row, piece.position.column, "W");
+                img.src = "../images/" + this.playerColor + image + ".png";
+                let divId = this.coordinatesToDivID(piece.position.row, piece.position.column, this.playerColor);
                 $("#" + divId).prepend(img);
             }
         }
@@ -524,19 +541,28 @@ function Board(color, gameState) {
     /////////////////////////////////////////////////////////
 
     this.pieceConquered = function(piece) {
+        if (piece instanceof King) {
+            alert("You Won!!");
+            return;
+        }
+
         let $image = document.createElement('img');
         let c = this.opponentColor;
         $image.src = "../images/" + c + piece.type + ".png";
         $("#conquered_pieces").append($image);
-    }
+    };
 
     this.pieceLost = function(piece) {
+        if (piece instanceof King) {
+            alert("You lost");
+            return;
+        }
+
         var $image = document.createElement('img');
         let c = this.playerColor;
-        console.log(piece);
         $image.src = "../images/" + c + piece.type + ".png";
         $("#lost_pieces").append($image);
-    }
+    };
 
     /////////////////////////////////////////////////////////
     /// Translation of coordinates from views to matrices ///
@@ -571,10 +597,41 @@ function Board(color, gameState) {
                 row: rowNum - 1
             }
         }
-    }
+    };
 
     this.translateOfColor = function (row, col) {
         let oppId = this.coordinatesToDivID(row, col, this.opponentColor);
         return this.divIdToCoordinates(oppId, this.playerColor);
     }
 }
+
+var access = function() {
+    var cookiesArray = document.cookie.split(';');
+    var cookies = [];
+
+    for (var i = 0; i < cookiesArray.length; i++) {
+        var cookie = cookiesArray[i].split("=");
+        cookies[cookie[0]] = cookie[1];
+    }
+
+    let timesAccessed = null;
+    if(cookies[cookie[0]] !== null){
+        timesAccessed = cookies[cookie[0]];
+    }
+
+    let now = new Date();
+    let time = now.getTime();
+    let expireTime = time + 172800 * 1000;
+    now.setTime(expireTime);
+    if (timesAccessed == null) {
+        timesAccessed = 1;
+        document.cookie = "timesAccessed=1;Expires=" + now.toUTCString();
+    } else {
+        document.cookie = "timesAccessed=" + timesAccessed + ";Expires=Fri, 24-Jan-1970 12:45:00 GMT";
+        document.cookie = "timesAccessed=" + (++timesAccessed) + ";Expires=" + now.toUTCString();
+    }
+
+    let $accessed = document.createElement('p');
+    $accessed.innerText = "You have accessed this page: " + timesAccessed + " times";
+    $("#game").append($accessed);
+};
