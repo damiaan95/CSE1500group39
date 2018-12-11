@@ -7,11 +7,9 @@ var main = function () {
         $("#moves").prepend($move);
     }
 
-    // $("#buttons button").on("click", function (event) {
-    //     access();
-    //     moveMade("key", "pressed");
-    //     // document.getElementById("board").webkitRequestFullscreen();
-    // });
+    $("#fullscreen").on("click", function (event) {
+        document.getElementById("board").webkitRequestFullscreen();
+    });
 };
 
 $(document).ready(main);
