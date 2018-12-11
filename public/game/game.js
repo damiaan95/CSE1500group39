@@ -12,15 +12,6 @@ var main = function () {
         moveMade("key", "pressed");
         // document.getElementById("board").webkitRequestFullscreen();
     });
-
-    function pieceLost(piece) {
-        var $image = document.createElement('img');
-        $image.src = "../images/" + piece.color + piece.type + ".png";
-        $("#lost_pieces").append($image);
-    }
-
-
-
 };
 
 var access = function() {

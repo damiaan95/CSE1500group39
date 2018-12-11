@@ -405,7 +405,9 @@ function Board(color, gameState) {
                 alert("Can't do this move, since it results in being checked");
                 return;
             }
-
+            if(posTo instanceof Piece) {
+                this.pieceConquered(posTo);
+            }
             this.drawMove(from, to, posTo);
             gameState.updateGameState(from, to, posTo, false);
         } else {
@@ -422,6 +424,9 @@ function Board(color, gameState) {
         this.board[from.row][from.column] = null;
         movedPiece.position.column = Number(to.column);
         movedPiece.position.row = Number(to.row);
+        if(posTo !== null) {
+            this.pieceLost(posTo);
+        }
         this.drawMove(from, to, posTo);
         if (this.getMyKing().checkMate(this)) {
             alert("CHECK-MATE!!!!");
@@ -510,17 +515,19 @@ function Board(color, gameState) {
     //////// Here the matrix is drawn to the board //////////
     /////////////////////////////////////////////////////////
 
-    function pieceConquered(piece) {
+    this.pieceConquered = function(piece) {
         let $image = document.createElement('img');
-        let c;
-        if (piece.color === "W") {
-            c = "B";
-        } else {
-            c = "W";
-        }
-
+        let c = this.opponentColor;
         $image.src = "../images/" + c + piece.type + ".png";
         $("#conquered_pieces").append($image);
+    }
+
+    this.pieceLost = function(piece) {
+        var $image = document.createElement('img');
+        let c = this.playerColor;
+        console.log(piece);
+        $image.src = "../images/" + c + piece.type + ".png";
+        $("#lost_pieces").append($image);
     }
 
     /////////////////////////////////////////////////////////
